@@ -1,0 +1,54 @@
+body, html, #root {
+    height: 100%;
+}
+.App {
+  text-align: center;
+  height: 100%;
+    display: flex;
+    flex-flow: column;
+}
+
+.App-header {
+  background-color: #222;
+  height: 50px;
+  padding-top: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+  margin: auto;
+}
+
+.App-container {
+  flex: 1;
+  display: flex;
+  flex-flow: row;
+  height: 100%;
+  padding: 10;
+}
+
+.Toolbar {
+  background-color: gray;
+  border: 1px solid black;
+  border-radius: 5px;
+  width: 200px;
+  margin: 5px;
+  flex: .25;
+}
+
+.MapContainer {
+  background-color: rgb(220, 220, 220);
+  border: 1px solid black;
+  border-radius: 5px;
+  width: 200px;
+  margin: 5px;
+  flex: .75;
+  display: flex;
+  flex-flow: column;
+}
+
+.MapContainer-container {
+  flex: 1;
+  margin:10px;
+}
