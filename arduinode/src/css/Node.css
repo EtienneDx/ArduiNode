@@ -5,9 +5,13 @@
   position: relative;
   left: 50px;
   top: 50px;
-  width: 100px;
-  height: 50px;
+  width: fit-content;
+  height: min-content;
   user-select: none;
+  margin: 0;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: rgb(100, 100, 100);
 }
 
 .Node :hover {
@@ -16,4 +20,43 @@
 
 .Node-header {
   border-bottom: 1px solid black;
+  padding: 5px;
+  padding-top: 0;
+}
+
+.Node-body {
+  width: fit-content;
+}
+
+.Node_inputs {
+  text-align: left;
+  width: fit-content;
+  padding-right: 7px;
+  display: inline-block;
+}
+
+.Node_outputs {
+  text-align: right;
+  width: fit-content;
+  padding-left: 7px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.Node-input {
+  width: fit-content;
+}
+
+.Node-input-image {
+  width: 20px;
+  height: 20px;
+}
+
+.Node-output {
+  width: fit-content;
+}
+
+.Node-output-image {
+  width: 20px;
+  height: 20px;
 }

@@ -1,18 +1,98 @@
-import React, { Component } from 'react';
+/* @flow */
+import * as React from 'react';
+
+import type { HTMLDivElement, SyntheticDragEvent } from 'flow';
+
+import { Input, Output } from './';
 import '../css/Node.css';
 
-class Node extends Component {
-  //implement state n stuff
+type State = {
+  mouseStartX : number,
+  mouseStartY : number,
+  startPosX : number,
+  startPosY : number,
+  posX : number,
+  posY : number,
+}
 
-  handleMouseDown(event) {
+type Props = {
+  width : number,
+  height : number,
+  zoomLevel: number,
+  children?: React.Node,
+  name : string
+}
 
+class Node extends React.Component<Props, State> {
+
+  state = {
+    mouseStartX : 0,
+    mouseStartY : 0,
+    startPosX : 50,
+    startPosY : 50,
+    posX : 4000,
+    posY : 4000,
+  };
+
+  divElement : HTMLDivElement;
+
+  handleDragStart(e : SyntheticDragEvent<HTMLDivElement>) {
+    e.stopPropagation();
+    this.setState({
+      mouseStartX: e.clientX,
+      mouseStartY: e.clientY,
+      startPosX : this.state.posX,
+      startPosY : this.state.posY,
+    });
+    //hide preview, moving in real time
+    var crt = this.divElement.cloneNode();
+    crt.style.display = "none";
+    e.dataTransfer.setDragImage(crt, 0, 0);
+  }
+
+  handleDrag(e : SyntheticDragEvent<HTMLDivElement>) {
+    e.stopPropagation();
+    this.setState({
+      posX: Math.min(Math.max(0, (e.clientX - this.state.mouseStartX) / this.props.zoomLevel + this.state.startPosX),
+        this.props.width - this.divElement.clientWidth),
+      posY: Math.min(Math.max(0, (e.clientY - this.state.mouseStartY) / this.props.zoomLevel + this.state.startPosY),
+        this.props.height - this.divElement.clientHeight),
+    });
+  }
+
+  handleDragEnd(e : SyntheticDragEvent<HTMLDivElement>) {
+    e.stopPropagation();
+    this.setState({
+      posX: Math.min(Math.max(0, (e.clientX - this.state.mouseStartX) / this.props.zoomLevel + this.state.startPosX),
+        this.props.width - this.divElement.clientWidth),
+      posY: Math.min(Math.max(0, (e.clientY - this.state.mouseStartY) / this.props.zoomLevel + this.state.startPosY),
+        this.props.height - this.divElement.clientHeight),
+    });
   }
 
   render() {
+    var style = {
+      left: this.state.posX,
+      top: this.state.posY,
+    };
     return (
-      <div className="Node" onMouseDown={(e) => this.handleMouseDown(e)}>
-        <div className="Node-header">header</div>
-        <div className="Node-body">body</div>
+      <div className="Node"
+        draggable="true"
+        onDragStart={(e) => this.handleDragStart(e)}
+        onDrag={(e) => this.handleDrag(e)}
+        onDragEnd={(e) => this.handleDragEnd(e)}
+        style={style}
+        ref={divElem => this.divElement = divElem}
+        >
+        <div className="Node-header">{this.props.name}</div>
+        <div className="Node-body">
+          <div className="Node_inputs">
+            {React.Children.toArray(this.props.children).filter(c => c.type === Input)}
+          </div>
+          <div className="Node_outputs">
+            {React.Children.toArray(this.props.children).filter(c => c.type === Output)}
+          </div>
+        </div>
       </div>
     );
   }

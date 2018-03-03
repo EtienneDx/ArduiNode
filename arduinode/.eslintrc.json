@@ -1,0 +1,18 @@
+{
+    "extends": [
+      "google",
+      "eslint:recommended",
+      "plugin:react/recommended"
+    ],
+    "parser": "babel-eslint",
+    "plugins": [
+      "flowtype",
+      "react"
+    ],
+    "parserOptions": {
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    }
+}
