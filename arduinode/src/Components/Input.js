@@ -1,6 +1,6 @@
 /* @flow */
 import React, { Component } from 'react';
-import { getUnpluggedImageForType, getPluggedImageForType } from '../Types';
+import { getUnpluggedImageForType, getPluggedImageForType, CanvasRenderingContext2D } from '../Types';
 
 //import type { HTMLDivElement, SyntheticDragEvent } from 'flow';
 import type { VarType } from '../Types';
@@ -21,6 +21,10 @@ class Input extends Component<Props, State> {
     if(this.props.plugged)
       return getPluggedImageForType(this.props.type);
     return getUnpluggedImageForType(this.props.type);
+  }
+
+  paint(context : CanvasRenderingContext2D) {
+    // @TODO
   }
 
   render() {

@@ -30,11 +30,13 @@ class Node extends React.Component<Props, State> {
     mouseStartY : 0,
     startPosX : 50,
     startPosY : 50,
-    posX : 4000,
-    posY : 4000,
+    posX : 2000,
+    posY : 2000,
   };
 
   divElement : HTMLDivElement;
+  inputs : Array<Input> = Array();
+  outputs : Array<Output> = Array();
 
   handleDragStart(e : SyntheticDragEvent<HTMLDivElement>) {
     e.stopPropagation();
@@ -87,10 +89,12 @@ class Node extends React.Component<Props, State> {
         <div className="Node-header">{this.props.name}</div>
         <div className="Node-body">
           <div className="Node_inputs">
-            {React.Children.toArray(this.props.children).filter(c => c.type === Input)}
+            {React.Children.toArray(this.props.children).filter(c => c.type === Input)
+              .map(input => React.cloneElement(input, {ref : connector => this.inputs.push(connector)}))}
           </div>
           <div className="Node_outputs">
-            {React.Children.toArray(this.props.children).filter(c => c.type === Output)}
+            {React.Children.toArray(this.props.children).filter(c => c.type === Output)
+              .map(input => React.cloneElement(input, {ref : connector => this.outputs.push(connector)}))}
           </div>
         </div>
       </div>

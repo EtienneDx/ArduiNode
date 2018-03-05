@@ -1,12 +1,11 @@
 /* @flow */
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import ContainerDimensions from 'react-container-dimensions';
 
-import { Node, Input, Output } from './';
-import { VarTypes } from '../Types';
+import { Node } from './';
 
-import type { HTMLDivElement, HTMLCanvasElement, SyntheticDragEvent, SyntheticWheelEvent } from 'flow';
+import type { HTMLDivElement, HTMLCanvasElement, SyntheticDragEvent, SyntheticWheelEvent, CanvasRenderingContext2D } from 'flow';
 
 const minZoomLevel = 0;
 const maxZoomLevel = 5;
@@ -23,20 +22,25 @@ type State = {
   zoomLevel : number,
 }
 
-class MapContainer extends Component<null, State> {
+type Props = {
+  children?: React.Node,
+}
+
+class MapContainer extends React.Component<Props, State> {
   state = {
     mouseStartX: 0,
     mouseStartY: 0,
     startPosX: 50,
     startPosY: 50,
-    posX: -4000,
-    posY: -4000,
+    posX: -2000,
+    posY: -2000,
     zoomLevel: 1,
   };
 
   container : HTMLDivElement;
   frame : HTMLDivElement;
   canvas : HTMLCanvasElement;
+  nodes : Array<Node> = Array();
 
   handleDragStart(e : SyntheticDragEvent<HTMLDivElement>) {
     this.setState({
@@ -66,6 +70,44 @@ class MapContainer extends Component<null, State> {
     }));
   }
 
+  componentDidMount() {
+    var context = this.canvas.getContext('2d');
+    this.paintCanvas(context);
+  }
+
+  componentDidUpdate() {
+    var context = this.canvas.getContext('2d');
+    context.clearRect(0, 0, 200, 200);
+    this.paintCanvas(context);
+  }
+
+  paintCanvas(context : CanvasRenderingContext2D) {
+    // @TODO implement 'gotta be repaint'
+
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
+    this.nodes.forEach(node => {
+      if(node !== null)
+      {
+        node.inputs.forEach(i => {
+          if(i !== null) i.paint(context)
+        });
+        node.outputs.filter(o => o !== null && o.state.isBeingDragged).forEach(o => o.paint(context));
+      }
+    });
+    /*React.Children.toArray(this.props.children).filter(c => c.type == Node)
+      .forEach((elem) => {
+        React.Children.toArray(elem.props.children).filter(ch => ch.type == Input || ch.type == Output)
+          .forEach((connector) => connector.paint(context));
+      })*/
+    /*context.beginPath();
+    context.moveTo(0, 0);
+    context.lineTo(2500, 2500);
+    context.lineWidth = 1;
+    context.strokeStyle = '#ff0000';
+    context.stroke();*/
+  }
+
   render() {
     const realZoom = zoomCorrespondances[this.state.zoomLevel];
     let style = {
@@ -74,6 +116,15 @@ class MapContainer extends Component<null, State> {
       zoom: realZoom,
       MozTransform: 'scale(' + realZoom.toString() + ')',
     };
+    console.log(this.container);
+    const childrenWithProps = this.container !== undefined ? React.Children.map(this.props.children, child =>
+      React.cloneElement(child, {
+        zoomLevel: realZoom,
+        ref: n => this.nodes.push(n),
+        width: this.container.clientWidth,
+        height: this.container.clientHeight
+      })) : null;
+      console.log(childrenWithProps);
     return (
       <div className="MapContainer">
         MapContainer
@@ -88,14 +139,8 @@ class MapContainer extends Component<null, State> {
             onWheel={(e) => this.handleScroll(e)}
             style={style}
             >
-            <canvas ref={canvas => this.canvas = canvas} className="MapContainer-canvas"></canvas>
-            <ContainerDimensions>
-              <Node zoomLevel={realZoom} name="testing node">
-                <Input type={VarTypes.EXEC} name="exec" />
-                <Output type={VarTypes.EXEC} name="exec" />
-                <Input type={VarTypes.EXEC} name="exec" />
-              </Node>
-            </ContainerDimensions>
+            <canvas ref={canvas => this.canvas = canvas} className="MapContainer-canvas" width={5000} height={5000}></canvas>
+              {childrenWithProps}
           </div>
         </div>
       </div>

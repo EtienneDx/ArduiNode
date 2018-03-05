@@ -1,6 +1,6 @@
 /* @flow */
 import React, { Component } from 'react';
-import { getUnpluggedImageForType, getPluggedImageForType } from '../Types';
+import { getUnpluggedImageForType, getPluggedImageForType, CanvasRenderingContext2D } from '../Types';
 
 //import type { HTMLDivElement, SyntheticDragEvent } from 'flow';
 import type { VarType } from '../Types';
@@ -8,6 +8,7 @@ import type { VarType } from '../Types';
 import '../css/Node.css';
 
 type State = {
+  isBeingDragged : boolean,
 }
 
 type Props = {
@@ -17,10 +18,18 @@ type Props = {
 }
 
 class Output extends Component<Props, State> {
+  state = {
+    isBeingDragged: false,
+  }
+
   getImageUrl() {
     if(this.props.plugged)
       return getPluggedImageForType(this.props.type);
     return getUnpluggedImageForType(this.props.type);
+  }
+
+  paint(context : CanvasRenderingContext2D) {
+    // @TODO
   }
 
   render() {

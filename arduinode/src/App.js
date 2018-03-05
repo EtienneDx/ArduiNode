@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import { Toolbar, MapContainer } from './Components';
+
+import { Toolbar, MapContainer, Node, Input, Output } from './Components';
 import './css/App.css';
+
+import { VarTypes } from './Types';
 
 class App extends Component {
   render() {
@@ -11,7 +14,13 @@ class App extends Component {
         </header>
         <div className="App-container">
           <Toolbar/>
-          <MapContainer/>
+          <MapContainer>
+            <Node name="testing node">
+              <Input type={VarTypes.EXEC} name="exec" />
+              <Output type={VarTypes.EXEC} name="exec" />
+              <Input type={VarTypes.EXEC} name="exec" />
+            </Node>
+          </MapContainer>
         </div>
       </div>
     );
