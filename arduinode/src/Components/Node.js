@@ -20,7 +20,8 @@ type Props = {
   height : number,
   zoomLevel: number,
   children?: React.Node,
-  name : string
+  name : string,
+  needRepaint : Function,
 }
 
 class Node extends React.Component<Props, State> {
@@ -30,13 +31,14 @@ class Node extends React.Component<Props, State> {
     mouseStartY : 0,
     startPosX : 50,
     startPosY : 50,
-    posX : 2000,
-    posY : 2000,
+    posX : 2200,
+    posY : 2200,
   };
 
   divElement : HTMLDivElement;
-  inputs : Array<Input> = Array();
-  outputs : Array<Output> = Array();
+  inputs : Array<Input> = [];
+  outputs : Array<Output> = [];
+  actuallyDraggedObject : Input | Output;
 
   handleDragStart(e : SyntheticDragEvent<HTMLDivElement>) {
     e.stopPropagation();
@@ -62,39 +64,62 @@ class Node extends React.Component<Props, State> {
     });
   }
 
-  handleDragEnd(e : SyntheticDragEvent<HTMLDivElement>) {
-    e.stopPropagation();
-    this.setState({
-      posX: Math.min(Math.max(0, (e.clientX - this.state.mouseStartX) / this.props.zoomLevel + this.state.startPosX),
-        this.props.width - this.divElement.clientWidth),
-      posY: Math.min(Math.max(0, (e.clientY - this.state.mouseStartY) / this.props.zoomLevel + this.state.startPosY),
-        this.props.height - this.divElement.clientHeight),
-    });
-  }
-
   render() {
+    const l = this.state.posX;
+    const t = this.state.posY;
     var style = {
-      left: this.state.posX,
-      top: this.state.posY,
+      left: l,
+      top: t,
     };
+    var inId = 0;
+    var outId = 0;
     return (
       <div className="Node"
         draggable="true"
         onDragStart={(e) => this.handleDragStart(e)}
         onDrag={(e) => this.handleDrag(e)}
-        onDragEnd={(e) => this.handleDragEnd(e)}
+        onDragEnd={(e) => {
+          this.handleDrag(e);
+          this.props.needRepaint();
+        }}
         style={style}
-        ref={divElem => this.divElement = divElem}
+        ref={divElem => {
+          if(this.divElement === undefined)
+            this.props.needRepaint();//repaint once mounted for the first time
+          this.divElement = divElem;
+        }}
         >
         <div className="Node-header">{this.props.name}</div>
         <div className="Node-body">
           <div className="Node_inputs">
             {React.Children.toArray(this.props.children).filter(c => c.type === Input)
-              .map(input => React.cloneElement(input, {ref : connector => this.inputs.push(connector)}))}
+              .map(input => React.cloneElement(input, {
+                ref : connector => {
+                  if(connector)
+                    this.inputs[inId++] = connector;
+                },
+                zoomLevel: this.props.zoomLevel,
+                needRepaint: this.props.needRepaint,
+                nodePosX: this.state.posX,
+                nodePosY: this.state.posY,
+                setDraggedObject: obj => this.actuallyDraggedObject = obj,
+                draggedObject: this.actuallyDraggedObject,// @TODO move that to MapContainer
+              }))}
           </div>
           <div className="Node_outputs">
             {React.Children.toArray(this.props.children).filter(c => c.type === Output)
-              .map(input => React.cloneElement(input, {ref : connector => this.outputs.push(connector)}))}
+              .map(input => React.cloneElement(input, {
+                ref : connector => {
+                  if(connector)
+                    this.outputs[outId++] = connector;
+                },
+                zoomLevel: this.props.zoomLevel,
+                needRepaint: this.props.needRepaint,
+                nodePosX: this.state.posX,
+                nodePosY: this.state.posY,
+                setDraggedObject: obj => this.actuallyDraggedObject = obj,
+                draggedObject: this.actuallyDraggedObject,
+              }))}
           </div>
         </div>
       </div>

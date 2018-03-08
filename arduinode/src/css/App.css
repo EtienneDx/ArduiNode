@@ -54,9 +54,6 @@ body, html, #root {
   overflow: hidden;
 }
 
-.MapContainer-container :hover {
-  cursor: grab;
-}
 .MapContainer-container {
   position: relative;
   flex: none;

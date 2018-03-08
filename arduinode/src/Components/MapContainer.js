@@ -1,7 +1,6 @@
 /* @flow */
 
 import * as React from 'react';
-import ContainerDimensions from 'react-container-dimensions';
 
 import { Node } from './';
 
@@ -40,7 +39,8 @@ class MapContainer extends React.Component<Props, State> {
   container : HTMLDivElement;
   frame : HTMLDivElement;
   canvas : HTMLCanvasElement;
-  nodes : Array<Node> = Array();
+  nodes : Array<Node> = [];
+  needRepaint : boolean = true;
 
   handleDragStart(e : SyntheticDragEvent<HTMLDivElement>) {
     this.setState({
@@ -76,13 +76,11 @@ class MapContainer extends React.Component<Props, State> {
   }
 
   componentDidUpdate() {
-    var context = this.canvas.getContext('2d');
-    context.clearRect(0, 0, 200, 200);
-    this.paintCanvas(context);
+    this.paintCanvas(this.canvas.getContext('2d'));
   }
 
   paintCanvas(context : CanvasRenderingContext2D) {
-    // @TODO implement 'gotta be repaint'
+    if(!this.needRepaint) return;//only repaint if needed
 
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
@@ -95,17 +93,8 @@ class MapContainer extends React.Component<Props, State> {
         node.outputs.filter(o => o !== null && o.state.isBeingDragged).forEach(o => o.paint(context));
       }
     });
-    /*React.Children.toArray(this.props.children).filter(c => c.type == Node)
-      .forEach((elem) => {
-        React.Children.toArray(elem.props.children).filter(ch => ch.type == Input || ch.type == Output)
-          .forEach((connector) => connector.paint(context));
-      })*/
-    /*context.beginPath();
-    context.moveTo(0, 0);
-    context.lineTo(2500, 2500);
-    context.lineWidth = 1;
-    context.strokeStyle = '#ff0000';
-    context.stroke();*/
+
+    this.needRepaint = false;
   }
 
   render() {
@@ -116,15 +105,22 @@ class MapContainer extends React.Component<Props, State> {
       zoom: realZoom,
       MozTransform: 'scale(' + realZoom.toString() + ')',
     };
-    console.log(this.container);
+    var id = 0;
     const childrenWithProps = this.container !== undefined ? React.Children.map(this.props.children, child =>
       React.cloneElement(child, {
         zoomLevel: realZoom,
-        ref: n => this.nodes.push(n),
+        ref: n => {
+          if(n)
+            this.nodes[id++] = n;
+        },
         width: this.container.clientWidth,
-        height: this.container.clientHeight
+        height: this.container.clientHeight,
+        needRepaint: () => {
+          this.needRepaint = true;
+          //eslint-disable-next-line
+          setTimeout(() => this.paintCanvas(this.canvas.getContext('2d')), 10);
+        },
       })) : null;
-      console.log(childrenWithProps);
     return (
       <div className="MapContainer">
         MapContainer
@@ -135,7 +131,12 @@ class MapContainer extends React.Component<Props, State> {
             onDragStart={(e) => this.handleDragStart(e)}
             onDrag={(e) => this.handleDrag(e)}
             onDragEnd={(e) => this.handleDrag(e)}
-            ref={(container) => this.container = container}
+            ref={(container) => {
+              const b = this.container === undefined;
+              this.container = container;
+              if(b)
+                this.setState({});//should redraw
+            }}
             onWheel={(e) => this.handleScroll(e)}
             style={style}
             >

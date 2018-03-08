@@ -2,7 +2,7 @@
   border: 1px solid black;
   border-radius: 5px;
   flex:none;
-  position: relative;
+  position: absolute;
   left: 50px;
   top: 50px;
   width: fit-content;
@@ -33,6 +33,7 @@
   width: fit-content;
   padding-right: 7px;
   display: inline-block;
+  vertical-align: top;
 }
 
 .Node_outputs {
@@ -43,20 +44,14 @@
   vertical-align: top;
 }
 
-.Node-input {
+.Node-input :hover, .Node-output :hover {
+  cursor: pointer;
+}
+.Node-input, .Node-output {
   width: fit-content;
 }
 
-.Node-input-image {
-  width: 20px;
-  height: 20px;
-}
-
-.Node-output {
-  width: fit-content;
-}
-
-.Node-output-image {
+.Node-input-image, .Node-output-image {
   width: 20px;
   height: 20px;
 }

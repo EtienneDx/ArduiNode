@@ -16,9 +16,13 @@ class App extends Component {
           <Toolbar/>
           <MapContainer>
             <Node name="testing node">
-              <Input type={VarTypes.EXEC} name="exec" />
+              <Input type={VarTypes.EXEC} name="exec" plugged="true" />
               <Output type={VarTypes.EXEC} name="exec" />
               <Input type={VarTypes.EXEC} name="exec" />
+            </Node>
+            <Node name="testing node 2">
+              <Input type={VarTypes.EXEC} name="exec" plugged="true" />
+              <Output type={VarTypes.EXEC} name="exec" />
             </Node>
           </MapContainer>
         </div>
