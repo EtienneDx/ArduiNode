@@ -6,6 +6,8 @@ import type { HTMLDivElement, SyntheticDragEvent } from 'flow';
 import { Input, Output } from './';
 import '../css/Node.css';
 
+const repaintRate = 6;
+
 type State = {
   mouseStartX : number,
   mouseStartY : number,
@@ -22,6 +24,8 @@ type Props = {
   children?: React.Node,
   name : string,
   needRepaint : Function,
+  setDraggedObject : Function,
+  getDraggedObject : Function,
 }
 
 class Node extends React.Component<Props, State> {
@@ -38,7 +42,7 @@ class Node extends React.Component<Props, State> {
   divElement : HTMLDivElement;
   inputs : Array<Input> = [];
   outputs : Array<Output> = [];
-  actuallyDraggedObject : Input | Output;
+  repaintLeft = repaintRate;
 
   handleDragStart(e : SyntheticDragEvent<HTMLDivElement>) {
     e.stopPropagation();
@@ -52,6 +56,7 @@ class Node extends React.Component<Props, State> {
     var crt = this.divElement.cloneNode();
     crt.style.display = "none";
     e.dataTransfer.setDragImage(crt, 0, 0);
+    this.repaintLeft = repaintRate;
   }
 
   handleDrag(e : SyntheticDragEvent<HTMLDivElement>) {
@@ -62,6 +67,10 @@ class Node extends React.Component<Props, State> {
       posY: Math.min(Math.max(0, (e.clientY - this.state.mouseStartY) / this.props.zoomLevel + this.state.startPosY),
         this.props.height - this.divElement.clientHeight),
     });
+    if(this.repaintLeft-- <= 0) {
+      this.repaintLeft = repaintRate;
+      this.props.needRepaint();
+    }
   }
 
   render() {
@@ -102,8 +111,8 @@ class Node extends React.Component<Props, State> {
                 needRepaint: this.props.needRepaint,
                 nodePosX: this.state.posX,
                 nodePosY: this.state.posY,
-                setDraggedObject: obj => this.actuallyDraggedObject = obj,
-                draggedObject: this.actuallyDraggedObject,// @TODO move that to MapContainer
+                setDraggedObject: obj => this.props.setDraggedObject(obj),
+                getDraggedObject : () => this.props.getDraggedObject(),
               }))}
           </div>
           <div className="Node_outputs">
@@ -117,8 +126,8 @@ class Node extends React.Component<Props, State> {
                 needRepaint: this.props.needRepaint,
                 nodePosX: this.state.posX,
                 nodePosY: this.state.posY,
-                setDraggedObject: obj => this.actuallyDraggedObject = obj,
-                draggedObject: this.actuallyDraggedObject,
+                setDraggedObject: obj => this.props.setDraggedObject(obj),
+                getDraggedObject : () => this.props.getDraggedObject(),
               }))}
           </div>
         </div>

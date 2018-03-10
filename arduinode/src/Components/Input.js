@@ -2,11 +2,11 @@
 import * as React from 'react';
 
 import { getUnpluggedImageForType, getPluggedImageForType, getColorForType } from '../Types';
+import { Output } from './';
 
 
 import type { CanvasRenderingContext2D, HTMLDivElement, HTMLImageElement, SyntheticDragEvent } from 'flow';
 import type { VarType } from '../Types';
-import type { Output } from './';
 
 import '../css/Node.css';
 
@@ -25,7 +25,7 @@ type Props = {
   nodePosX : number,
   nodePosY : number,
   setDraggedObject : Function,
-  draggedObject : Input | Output,
+  getDraggedObject : Function,
 }
 
 const refreshRate = 10;
@@ -40,9 +40,21 @@ class Input extends React.Component<Props, State> {
   }
 
   image : HTMLImageElement;
+  container : HTMLDivElement;//for drag start
   refreshLeft = refreshRate;
   mouseX : number;
   mouseY : number;
+  connectedTo : Output;
+
+  connectTo(obj : Output) {
+    this.connectedTo = obj;
+    this.setState({plugged : true});
+  }
+
+  disconnect() {
+    this.connectedTo = undefined;
+    this.setState({plugged : false});
+  }
 
   getImageUrl() {
     if(this.state.plugged)
@@ -55,30 +67,33 @@ class Input extends React.Component<Props, State> {
   }
 
   getPosY() {
-    return this.props.nodePosY + this.image.offsetTop + this.image.width / 2;
+    return this.props.nodePosY + this.image.offsetTop + this.image.height / 2;
   }
 
   paint(context : CanvasRenderingContext2D) {
     if(this.state.isBeingDragged) {
-      context.strokeStyle = getColorForType(this.props.type);
-      context.beginPath();
-      context.moveTo(this.getPosX(), this.getPosY());
-
-      const targetX = this.mouseX;
-      const targetY = this.mouseY;
-
-      context.bezierCurveTo(
-        this.getPosX() - Math.abs(this.getPosX() - targetX) / 2,
-        this.getPosY(),
-        targetX + Math.abs(this.getPosX() - targetX) / 2,
-        targetY,
-        targetX, targetY
-      );
-
-      //context.lineTo(this.mouseX, this.mouseY);
-      context.lineWidth = 2;
-      context.stroke();
+      this.paintBezier(context, this.getPosX(), this.getPosY(), this.mouseX, this.mouseY);
     }
+    if(this.connectedTo) {
+      this.paintBezier(context, this.getPosX(), this.getPosY(), this.connectedTo.getPosX(), this.connectedTo.getPosY());
+    }
+  }
+
+  // @TODO move that somewhere else
+  paintBezier(context : CanvasRenderingContext2D, fromX : number, fromY : number, toX : number, toY : number) {
+    context.strokeStyle = getColorForType(this.props.type);
+    context.beginPath();
+    context.moveTo(fromX, fromY);
+
+    context.bezierCurveTo(
+      fromX - Math.abs(fromX - toX) / 2, fromY,//control point 1
+      toX + Math.abs(fromX - toX) / 2, toY,//control point 2
+      toX, toY//end point
+    );
+
+    //context.lineTo(this.mouseX, this.mouseY);
+    context.lineWidth = 2;
+    context.stroke();
   }
 
   handleDragStart(e : SyntheticDragEvent<HTMLDivElement>) {
@@ -90,11 +105,11 @@ class Input extends React.Component<Props, State> {
       isBeingDragged: true,
     });
 
-    var crt = this.image.cloneNode();
+    var crt = this.container.cloneNode();
     crt.style.display = "none";
     e.dataTransfer.setDragImage(crt, 0, 0);
 
-    this.props.setDraggedObject("this");
+    this.props.setDraggedObject(this);
   }
 
   handleDrag(e : SyntheticDragEvent<HTMLDivElement>) {
@@ -118,11 +133,12 @@ class Input extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="Node-input">
+      <div className="Node-input" ref={e => this.container = e}>
         <img
           className="Node-input-image"
           src={this.getImageUrl()}
-          alt="varType" ref={e => this.image = e}
+          alt="varType"
+          ref={e => this.image = e}
           draggable="true"
           onDragStart={e => this.handleDragStart(e)}
           onDrag={e => this.handleDrag(e)}

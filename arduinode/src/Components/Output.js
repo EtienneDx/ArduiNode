@@ -1,10 +1,10 @@
 /* @flow */
 import React, { Component } from 'react';
-import { getUnpluggedImageForType, getPluggedImageForType, CanvasRenderingContext2D } from '../Types';
+import { VarTypes, getUnpluggedImageForType, getPluggedImageForType, CanvasRenderingContext2D } from '../Types';
+import { Input } from './';
 
-import type { SyntheticDragEvent } from 'flow';
+import type { SyntheticDragEvent, HTMLImageElement } from 'flow';
 import type { VarType } from '../Types';
-import type { Input } from './';
 
 import '../css/Node.css';
 
@@ -14,13 +14,12 @@ type State = {
 
 type Props = {
   type : VarType,
-  plugged : boolean,
   name : string,
   needRepaint : Function,
   nodePosX : number,
   nodePosY : number,
   setDraggedObject : Function,
-  draggedObject : Input | Output,
+  getDraggedObject : Function,
 }
 
 class Output extends Component<Props, State> {
@@ -28,8 +27,19 @@ class Output extends Component<Props, State> {
     isBeingDragged: false,
   }
 
+  image : HTMLImageElement;
+connectedTo : Input;
+
+  getPosX() {
+    return this.props.nodePosX + this.image.offsetLeft + this.image.width;
+  }
+
+  getPosY() {
+    return this.props.nodePosY + this.image.offsetTop + this.image.height / 2;
+  }
+
   getImageUrl() {
-    if(this.props.plugged)
+    if(this.connectedTo)
       return getPluggedImageForType(this.props.type);
     return getUnpluggedImageForType(this.props.type);
   }
@@ -38,23 +48,38 @@ class Output extends Component<Props, State> {
     // @TODO
   }
 
+  handleDragOver(e : SyntheticDragEvent) {
+    if(this.props.getDraggedObject() instanceof Input)
+      e.preventDefault();
+  }
+
   handleDrop(e : SyntheticDragEvent) {
-    e.preventDefault();
-    console.log(this.props.draggedObject);
+    if(this.props.getDraggedObject() instanceof Input && this.props.getDraggedObject().props.type === this.props.type)
+    {
+      e.preventDefault();
+      if(this.connectedTo && this.props.type === VarTypes.EXEC)
+        this.connectedTo.disconnect();
+      this.connectedTo = this.props.getDraggedObject();
+      this.props.getDraggedObject().connectTo(this);
+      this.props.setDraggedObject(null);
+      this.setState({});//force re render
+    }
   }
 
   render() {
     return (
       <div
         className="Node-output"
-        /*draggable="true"
-        onDragStart={e => this.handleSragStart(e)}*/// @TODO finish this
-
-        onDragOver={e => e.preventDefault()}
+        onDragOver={e => this.handleDragOver(e)}
         onDrop={e => this.handleDrop(e)}
         >
         <span className="Node-output-name">{this.props.name}</span>
-        <img className="Node-output-image" src={this.getImageUrl()} alt="varType"/>
+        <img
+          className="Node-output-image"
+          src={this.getImageUrl()}
+          alt="varType"
+          ref={e => this.image = e}
+        />
       </div>
     );
   }

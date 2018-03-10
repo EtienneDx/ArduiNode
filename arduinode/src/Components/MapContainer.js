@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { Node } from './';
+import { Node, Input, Output } from './';
 
 import type { HTMLDivElement, HTMLCanvasElement, SyntheticDragEvent, SyntheticWheelEvent, CanvasRenderingContext2D } from 'flow';
 
@@ -41,6 +41,7 @@ class MapContainer extends React.Component<Props, State> {
   canvas : HTMLCanvasElement;
   nodes : Array<Node> = [];
   needRepaint : boolean = true;
+  actuallyDraggedObject : Input | Output;
 
   handleDragStart(e : SyntheticDragEvent<HTMLDivElement>) {
     this.setState({
@@ -120,6 +121,8 @@ class MapContainer extends React.Component<Props, State> {
           //eslint-disable-next-line
           setTimeout(() => this.paintCanvas(this.canvas.getContext('2d')), 10);
         },
+        setDraggedObject: obj => this.actuallyDraggedObject = obj,
+        getDraggedObject : () => this.actuallyDraggedObject,
       })) : null;
     return (
       <div className="MapContainer">
