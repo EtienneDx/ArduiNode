@@ -1,9 +1,9 @@
 /* @flow */
 import * as React from 'react';
 
-import { getUnpluggedImageForType, getPluggedImageForType, getColorForType } from '../Types';
+import { VarTypes, getUnpluggedImageForType, getPluggedImageForType, getColorForType } from '../Types';
 import { Output } from './';
-
+import { paintBezier } from '../Tools';
 
 import type { CanvasRenderingContext2D, HTMLDivElement, HTMLImageElement, SyntheticDragEvent } from 'flow';
 import type { VarType } from '../Types';
@@ -44,16 +44,17 @@ class Input extends React.Component<Props, State> {
   refreshLeft = refreshRate;
   mouseX : number;
   mouseY : number;
-  connectedTo : Output;
+  connectedTo : Array<Output> = [];
 
   connectTo(obj : Output) {
-    this.connectedTo = obj;
+    if(!this.connectedTo.includes(obj))
+      this.connectedTo.push(obj);
     this.setState({plugged : true});
   }
 
-  disconnect() {
-    this.connectedTo = undefined;
-    this.setState({plugged : false});
+  disconnect(obj : Output) {
+    this.connectedTo.splice(this.connectedTo.indexOf(obj), 1);
+    this.setState({plugged : this.connectedTo.length > 0});
   }
 
   getImageUrl() {
@@ -72,31 +73,17 @@ class Input extends React.Component<Props, State> {
 
   paint(context : CanvasRenderingContext2D) {
     if(this.state.isBeingDragged) {
-      this.paintBezier(context, this.getPosX(), this.getPosY(), this.mouseX, this.mouseY);
+      paintBezier(context, this.getPosX(), this.getPosY(), this.mouseX, this.mouseY, getColorForType(this.props.type));
     }
-    if(this.connectedTo) {
-      this.paintBezier(context, this.getPosX(), this.getPosY(), this.connectedTo.getPosX(), this.connectedTo.getPosY());
-    }
+      this.connectedTo.forEach(e =>
+        paintBezier(
+          context,
+          this.getPosX(), this.getPosY(), //from
+          e.getPosX(), e.getPosY(), //towards
+          getColorForType(this.props.type)));
   }
-
-  // @TODO move that somewhere else
-  paintBezier(context : CanvasRenderingContext2D, fromX : number, fromY : number, toX : number, toY : number) {
-    context.strokeStyle = getColorForType(this.props.type);
-    context.beginPath();
-    context.moveTo(fromX, fromY);
-
-    context.bezierCurveTo(
-      fromX - Math.abs(fromX - toX) / 2, fromY,//control point 1
-      toX + Math.abs(fromX - toX) / 2, toY,//control point 2
-      toX, toY//end point
-    );
-
-    //context.lineTo(this.mouseX, this.mouseY);
-    context.lineWidth = 2;
-    context.stroke();
-  }
-
-  handleDragStart(e : SyntheticDragEvent<HTMLDivElement>) {
+  /********This being dragged events***************/
+  handleDragStart(e : SyntheticDragEvent) {
     e.stopPropagation();
     this.refreshLeft = refreshRate;
     this.setState({
@@ -112,7 +99,7 @@ class Input extends React.Component<Props, State> {
     this.props.setDraggedObject(this);
   }
 
-  handleDrag(e : SyntheticDragEvent<HTMLDivElement>) {
+  handleDrag(e : SyntheticDragEvent) {
     e.stopPropagation();
     this.refreshLeft--;
     if(this.refreshLeft <= 0) {
@@ -123,17 +110,47 @@ class Input extends React.Component<Props, State> {
     }
   }
 
-  handleDragEnd(e : SyntheticDragEvent<HTMLDivElement>) {
+  handleDragEnd(e : SyntheticDragEvent) {
     e.stopPropagation();
     this.setState({
       isBeingDragged: false,
     });
+    this.props.setDraggedObject(undefined);
     this.props.needRepaint();
+  }
+
+  /***************This used as a dropzone events****************/
+
+  handleDragOver(e : SyntheticDragEvent) {
+    if(this.props.getDraggedObject() instanceof Output && this.props.getDraggedObject().props.type === this.props.type)
+      e.preventDefault();
+  }
+
+  handleDrop(e : SyntheticDragEvent) {
+    if(this.props.getDraggedObject() instanceof Output && this.props.getDraggedObject().props.type === this.props.type)
+    {
+      e.preventDefault();
+      if(this.connectedTo.length > 0 && this.props.type !== VarTypes.EXEC) {//non exec can only have one connection on inputs
+        this.connectedTo.forEach(e => e.disconnect());
+        this.connectedTo = [];
+      }
+      if(!this.connectedTo.includes(this.props.getDraggedObject()))
+      {
+        this.connectedTo.push(this.props.getDraggedObject());
+        this.props.getDraggedObject().connectTo(this);
+      }
+      this.setState({plugged : this.connectedTo.length > 0});//force re render
+    }
   }
 
   render() {
     return (
-      <div className="Node-input" ref={e => this.container = e}>
+      <div
+        className="Node-input"
+        ref={e => this.container = e}
+        onDragOver={e => this.handleDragOver(e)}
+        onDrop={e => this.handleDrop(e)}
+      >
         <img
           className="Node-input-image"
           src={this.getImageUrl()}

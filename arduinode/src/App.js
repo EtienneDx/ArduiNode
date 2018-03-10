@@ -18,6 +18,7 @@ class App extends Component {
             <Node name="testing node">
               <Input type={VarTypes.EXEC} name="exec" plugged="true" />
               <Output type={VarTypes.EXEC} name="exec" />
+              <Output type={VarTypes.EXEC} name="exec" />
               <Input type={VarTypes.EXEC} name="exec" />
             </Node>
             <Node name="testing node 2">
