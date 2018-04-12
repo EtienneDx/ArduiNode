@@ -28,22 +28,13 @@ body, html, #root {
   padding: 10;
 }
 
-.Toolbar {
-  background-color: gray;
-  border: 1px solid black;
-  border-radius: 5px;
-  width: 200px;
-  margin: 5px;
-  flex: .25;
-}
-
 .MapContainer {
   background-color: rgb(220, 220, 220);
   border: 1px solid black;
   border-radius: 5px;
   width: 200px;
   margin: 5px;
-  flex: .75;
+  flex: .6;
   display: flex;
   flex-flow: column;
 }
@@ -70,4 +61,50 @@ body, html, #root {
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+.left-toolbar {
+  background-color: gray;
+  border: 1px solid black;
+  border-radius: 5px;
+  width: 200px;
+  margin: 5px;
+  flex: .22;
+}
+
+.right-toolbar {
+  background-color: gray;
+  border: 1px solid black;
+  border-radius: 5px;
+  width: 200px;
+  margin: 5px;
+  flex: .18;
+}
+
+.Toolbar {
+  width: 100%;
+  height: 100%;
+}
+
+.Variables {
+  margin: 8px;
+  border-bottom: 1px solid black;
+  min-height: 200px;
+  max-height: 50%;
+  overflow-y: auto;
+}
+
+.Variables-list {
+  text-align: left;
+}
+
+.Details {
+  margin: 8px;
+  min-height: 200px;
+  max-height: 50%;
+  overflow-y: auto;
+}
+
+li {
+  text-align: left;
 }

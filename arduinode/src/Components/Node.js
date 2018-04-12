@@ -1,10 +1,13 @@
 /* @flow */
 import * as React from 'react';
 
-import type { HTMLDivElement, SyntheticDragEvent } from 'flow';
+import type { HTMLDivElement, SyntheticDragEvent, SyntheticMouseEvent } from 'flow';
 
 import { Input, Output } from './';
+import { VarTypes } from '../Types';
 import '../css/Node.css';
+
+import type NodeType from '../Types';
 
 const repaintRate = 6;
 
@@ -15,17 +18,18 @@ type State = {
   startPosY : number,
   posX : number,
   posY : number,
+  enabled : boolean,
 }
 
 type Props = {
+  type : NodeType,
   width : number,
   height : number,
   zoomLevel: number,
-  children?: React.Node,
-  name : string,
   needRepaint : Function,
   setDraggedObject : Function,
   getDraggedObject : Function,
+  getVar : Function,
 }
 
 class Node extends React.Component<Props, State> {
@@ -37,6 +41,7 @@ class Node extends React.Component<Props, State> {
     startPosY : 50,
     posX : 2200,
     posY : 2200,
+    enabled : true,
   };
 
   divElement : HTMLDivElement;
@@ -73,13 +78,46 @@ class Node extends React.Component<Props, State> {
     }
   }
 
+  handleClick(e : SyntheticMouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.altKey) {
+      this.setState({ enabled : false });// delete the node
+      // eslint-disable-next-line
+      setTimeout(() => {
+        this.check();
+        this.props.needRepaint();
+      }, 10);// check after setstate becomes effective
+    }
+  }
+
+  check() {
+    if(this.props.type.name === "Get" && this.props.getVar(this.props.type.target).enabled === false) {
+      this.setState({ enabled : false });
+    }
+    this.inputs.forEach(i => i.checkConnections());
+    this.outputs.forEach(o => o.checkConnections());
+  }
+
   render() {
+    if(this.state.enabled === false) return null;
     const l = this.state.posX;
     const t = this.state.posY;
     var style = {
       left: l,
       top: t,
     };
+
+    var headerName = this.props.type.name;
+    if(this.props.type.name === "Get") {// Variable getter
+      this.props.type.outputs[0].type = this.props.getVar(this.props.type.target).type.name;
+      headerName += " " + this.props.getVar(this.props.type.target).name;
+    }
+    if(this.props.type.name === "Set") {// Variable setter
+      this.props.type.inputs[1].type = this.props.getVar(this.props.type.target).type.name;
+      headerName += " " + this.props.getVar(this.props.type.target).name;
+    }
+
     var inId = 0;
     var outId = 0;
     return (
@@ -91,6 +129,7 @@ class Node extends React.Component<Props, State> {
           this.handleDrag(e);
           this.props.needRepaint();
         }}
+        onClick={e => this.handleClick(e)}
         style={style}
         ref={divElem => {
           if(this.divElement === undefined)
@@ -98,37 +137,51 @@ class Node extends React.Component<Props, State> {
           this.divElement = divElem;
         }}
         >
-        <div className="Node-header">{this.props.name}</div>
+        <div className="Node-header">{headerName}</div>
         <div className="Node-body">
           <div className="Node_inputs">
-            {React.Children.toArray(this.props.children).filter(c => c.type === Input)
-              .map(input => React.cloneElement(input, {
-                ref : connector => {
-                  if(connector)
-                    this.inputs[inId++] = connector;
-                },
-                zoomLevel: this.props.zoomLevel,
-                needRepaint: this.props.needRepaint,
-                nodePosX: this.state.posX,
-                nodePosY: this.state.posY,
-                setDraggedObject: obj => this.props.setDraggedObject(obj),
-                getDraggedObject : () => this.props.getDraggedObject(),
-              }))}
+            {this.props.type.inputs.map(
+              input => (
+                <Input
+                  type={VarTypes.getVarType(input.type)}
+                  name={input.name}
+                  zoomLevel={this.props.zoomLevel}
+                  needRepaint={this.props.needRepaint}
+                  nodePosX={this.state.posX}
+                  nodePosY={this.state.posY}
+                  setDraggedObject={this.props.setDraggedObject}
+                  getDraggedObject={this.props.getDraggedObject}
+                  connectorId={inId}
+                  key={inId++}
+                  ref={connector => {
+                    if(connector)
+                      this.inputs[connector.props.connectorId] = connector;
+                  }}
+                  parent={this}
+                />
+              ))}
           </div>
           <div className="Node_outputs">
-            {React.Children.toArray(this.props.children).filter(c => c.type === Output)
-              .map(input => React.cloneElement(input, {
-                ref : connector => {
-                  if(connector)
-                    this.outputs[outId++] = connector;
-                },
-                zoomLevel: this.props.zoomLevel,
-                needRepaint: this.props.needRepaint,
-                nodePosX: this.state.posX,
-                nodePosY: this.state.posY,
-                setDraggedObject: obj => this.props.setDraggedObject(obj),
-                getDraggedObject : () => this.props.getDraggedObject(),
-              }))}
+            {this.props.type.outputs.map(
+              output => (
+                <Output
+                  type={VarTypes.getVarType(output.type)}
+                  name={output.name}
+                  zoomLevel={this.props.zoomLevel}
+                  needRepaint={this.props.needRepaint}
+                  nodePosX={this.state.posX}
+                  nodePosY={this.state.posY}
+                  setDraggedObject={this.props.setDraggedObject}
+                  getDraggedObject={this.props.getDraggedObject}
+                  connectorId={outId}
+                  key={outId++}
+                  ref={connector => {
+                    if(connector)
+                      this.outputs[connector.props.connectorId] = connector;
+                  }}
+                  parent={this}
+                />
+              ))}
           </div>
         </div>
       </div>

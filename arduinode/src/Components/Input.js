@@ -1,18 +1,17 @@
 /* @flow */
 import * as React from 'react';
 
-import { VarTypes, getUnpluggedImageForType, getPluggedImageForType, getColorForType } from '../Types';
-import { Output } from './';
+import { VarTypes } from '../Types';
+import { Output, Node } from './';
 import { paintBezier } from '../Tools';
 
-import type { CanvasRenderingContext2D, HTMLDivElement, HTMLImageElement, SyntheticDragEvent } from 'flow';
+import type { CanvasRenderingContext2D, HTMLDivElement, HTMLImageElement, SyntheticDragEvent, SyntheticMouseEvent } from 'flow';
 import type { VarType } from '../Types';
 
 import '../css/Node.css';
 
 type State = {
   isBeingDragged : boolean,
-  plugged : boolean,
   mouseStartX : number,
   mouseStartY : number,
 }
@@ -26,15 +25,15 @@ type Props = {
   nodePosY : number,
   setDraggedObject : Function,
   getDraggedObject : Function,
+  parent : Node,
 }
 
-const refreshRate = 10;
+const refreshRate = 10;// rate at which the line is redrawn
 
 class Input extends React.Component<Props, State> {
 
   state = {
     isBeingDragged : false,
-    plugged : false,
     mouseStartX : 0,
     mouseStartY : 0,
   }
@@ -49,18 +48,20 @@ class Input extends React.Component<Props, State> {
   connectTo(obj : Output) {
     if(!this.connectedTo.includes(obj))
       this.connectedTo.push(obj);
-    this.setState({plugged : true});
+    this.setState({});
   }
 
   disconnect(obj : Output) {
+    if(this.props.parent.state.enabled === false) return;// we're not mounted anymore
     this.connectedTo.splice(this.connectedTo.indexOf(obj), 1);
-    this.setState({plugged : this.connectedTo.length > 0});
+    this.setState({});
   }
 
   getImageUrl() {
-    if(this.state.plugged)
-      return getPluggedImageForType(this.props.type);
-    return getUnpluggedImageForType(this.props.type);
+    if(!this.props.type) return;
+    if(this.connectedTo.length > 0)
+      return this.props.type.pluggedImage;
+    return this.props.type.unpluggedImage;
   }
 
   getPosX() {
@@ -72,16 +73,18 @@ class Input extends React.Component<Props, State> {
   }
 
   paint(context : CanvasRenderingContext2D) {
+    this.checkConnections();
     if(this.state.isBeingDragged) {
-      paintBezier(context, this.getPosX(), this.getPosY(), this.mouseX, this.mouseY, getColorForType(this.props.type));
+      paintBezier(context, this.getPosX(), this.getPosY(), this.mouseX, this.mouseY, this.props.type.color);
     }
       this.connectedTo.forEach(e =>
         paintBezier(
           context,
           this.getPosX(), this.getPosY(), //from
           e.getPosX(), e.getPosY(), //towards
-          getColorForType(this.props.type)));
+          this.props.type.color));
   }
+
   /********This being dragged events***************/
   handleDragStart(e : SyntheticDragEvent) {
     e.stopPropagation();
@@ -139,8 +142,37 @@ class Input extends React.Component<Props, State> {
         this.connectedTo.push(this.props.getDraggedObject());
         this.props.getDraggedObject().connectTo(this);
       }
-      this.setState({plugged : this.connectedTo.length > 0});//force re render
+      this.setState({});//force re render
     }
+  }
+
+  /*********Other events************/
+  handleClick(e : SyntheticMouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.altKey) {
+      this.connectedTo.forEach(obj => obj.disconnect(this));
+      this.connectedTo = [];
+      this.props.needRepaint();
+      this.setState({});//force re render
+    }
+  }
+
+  /********render*********/
+
+  checkConnections() {
+    for (var i = 0; i < this.connectedTo.length; i++) {
+      if (
+        this.connectedTo[i].props.type !== this.props.type ||
+        this.connectedTo[i].props.parent.state.enabled === false ||
+        this.props.parent.state.enabled === false
+      ) {
+        this.connectedTo[i].disconnect(this);
+        this.connectedTo.splice(i--, 1);
+      }
+    }
+    if(this.props.parent.state.enabled === true)// we're mounted
+      this.setState({});//force re render
   }
 
   render() {
@@ -160,6 +192,7 @@ class Input extends React.Component<Props, State> {
           onDragStart={e => this.handleDragStart(e)}
           onDrag={e => this.handleDrag(e)}
           onDragEnd={e => this.handleDragEnd(e)}
+          onClick={e => this.handleClick(e)}
         />
         <span className="Node-input-name">{this.props.name}</span>
       </div>

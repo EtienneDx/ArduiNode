@@ -1,10 +1,10 @@
 /* @flow */
 import React, { Component } from 'react';
-import { VarTypes, getUnpluggedImageForType, getPluggedImageForType, getColorForType } from '../Types';
-import { Input } from './';
+import { VarTypes } from '../Types';
+import { Input, Node } from './';
 import { paintBezier } from '../Tools';
 
-import type { SyntheticDragEvent, HTMLImageElement, HTMLDivElement, CanvasRenderingContext2D } from 'flow';
+import type { SyntheticDragEvent, HTMLImageElement, HTMLDivElement, CanvasRenderingContext2D, SyntheticMouseEvent } from 'flow';
 import type { VarType } from '../Types';
 
 import '../css/Node.css';
@@ -26,6 +26,7 @@ type Props = {
   nodePosY : number,
   setDraggedObject : Function,
   getDraggedObject : Function,
+  parent : Node,
 }
 
 class Output extends Component<Props, State> {
@@ -44,7 +45,7 @@ class Output extends Component<Props, State> {
 
   connectTo(obj : Input) {
     if(!this.connectedTo.includes(obj)) {
-      if(this.props.type === VarTypes.EXEC) {
+      if(this.props.type === VarTypes.Exec) {
         this.connectedTo.forEach(e => e.disconnect(this));
         this.connectedTo = [];
       }
@@ -54,7 +55,9 @@ class Output extends Component<Props, State> {
   }
 
   disconnect(obj : Input) {
+    if(this.props.parent.state.enabled === false) return;// we're not mounted anymore
     this.connectedTo.splice(this.connectedTo.indexOf(obj), 1);
+    this.setState({});//force re render
   }
 
   getPosX() {
@@ -66,14 +69,16 @@ class Output extends Component<Props, State> {
   }
 
   getImageUrl() {
+    if(!this.props.type) return;
     if(this.connectedTo.length > 0)
-      return getPluggedImageForType(this.props.type);
-    return getUnpluggedImageForType(this.props.type);
+      return this.props.type.pluggedImage;
+    return this.props.type.unpluggedImage;
   }
 
   paint(context : CanvasRenderingContext2D) {
+    this.checkConnections();
     if(this.state.isBeingDragged) {
-      paintBezier(context, this.mouseX, this.mouseY, this.getPosX(), this.getPosY(), getColorForType(this.props.type));
+      paintBezier(context, this.mouseX, this.mouseY, this.getPosX(), this.getPosY(), this.props.type.color);
     }
   }
 
@@ -136,6 +141,35 @@ class Output extends Component<Props, State> {
     this.props.needRepaint();
   }
 
+  /*********Other events************/
+  handleClick(e : SyntheticMouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.altKey) {
+      this.connectedTo.forEach(obj => obj.disconnect(this));
+      this.connectedTo = [];
+      this.props.needRepaint();
+      this.setState({});//force re render
+    }
+  }
+
+  /**********Render**********/
+
+  checkConnections() {
+    for (var i = 0; i < this.connectedTo.length; i++) {
+      if (
+        this.connectedTo[i].props.type !== this.props.type ||
+        this.connectedTo[i].props.parent.state.enabled === false ||
+        this.props.parent.state.enabled === false
+      ) {
+        this.connectedTo[i].disconnect(this);
+        this.connectedTo.splice(i--, 1);
+      }
+    }
+    if(this.props.parent.state.enabled === true)// we're mounted
+      this.setState({});//force re render
+  }
+
   render() {
     return (
       <div
@@ -154,6 +188,7 @@ class Output extends Component<Props, State> {
           onDragStart={e => this.handleDragStart(e)}
           onDrag={e => this.handleDrag(e)}
           onDragEnd={e => this.handleDragEnd(e)}
+          onClick={e => this.handleClick(e)}
         />
       </div>
     );

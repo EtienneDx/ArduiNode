@@ -86,7 +86,7 @@ class MapContainer extends React.Component<Props, State> {
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
     this.nodes.forEach(node => {
-      if(node !== null)
+      if(node !== null && node.enabled !== false)
       {
         node.inputs.forEach(i => {
           if(i !== null) i.paint(context)
@@ -98,7 +98,15 @@ class MapContainer extends React.Component<Props, State> {
     this.needRepaint = false;
   }
 
+  checkConnections() {
+    this.nodes.forEach(n => {
+      n.check();
+    });
+  }
+
   render() {
+    this.needRepaint = true;
+    setTimeout(() => this.paintCanvas(this.canvas.getContext('2d')), 10);// eslint-disable-line
     const realZoom = zoomCorrespondances[this.state.zoomLevel];
     let style = {
       left: this.state.posX,
@@ -106,13 +114,13 @@ class MapContainer extends React.Component<Props, State> {
       zoom: realZoom,
       MozTransform: 'scale(' + realZoom.toString() + ')',
     };
-    var id = 0;
+    //var id = 0;
     const childrenWithProps = this.container !== undefined ? React.Children.map(this.props.children, child =>
       React.cloneElement(child, {
         zoomLevel: realZoom,
         ref: n => {
           if(n)
-            this.nodes[id++] = n;
+            this.nodes[child.props.nodeKey] = n;//keep same index as in App
         },
         width: this.container.clientWidth,
         height: this.container.clientHeight,

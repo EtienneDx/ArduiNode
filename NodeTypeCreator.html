@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Node Type Creator</title>
+	</head>
+	<body>
+		<div>
+			<label for="name">Name : <input type="text" name="name" id="name" /></label><br><br>
+			<button id="addInput">Add input</button><br>
+			<div id="inputs"></div><br><br>
+			<button id="addOutput">Add output</button><br>
+			<div id="outputs"></div><br><br>
+			<input type="checkbox" checked id="needsExecution"><label for="needsExecution">Needs Execution</label><br><br>
+			Global vars : <br><br>
+			<textarea id="globalVars"></textarea><br>
+			Becomes : <br><br>
+			<textarea id="becomes"></textarea>
+		</div>
+		<!--templates-->
+		<div id="connectorTemplate" style="display:none">
+			<button class="remove">Remove</button>
+			<select class="type">
+				<option value="Execution">Execution</option>
+				<option value="Pin">Pin</option>
+				<option value="Bool">Bool</option>
+				<option value="Int">Int</option>
+			</select><br>
+			Name : <input type="text" name="name" class="name" /><br>
+		</div>
+		<button id="generate">Generate</button><br>
+		<textarea id="return" style="width:80%; height:500px;"></textarea>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script type="text/javascript">
+			var temp = `{
+	name : "<<name>>",
+	inputs : [<<inputs>>
+	],
+	outputs : [<<outputs>>
+	],
+	needsExecution : <<needsExecution>>,
+	becomes : \`
+		<<becomes>>
+	\`,
+	globalVars : [<<globalVars>>
+	]
+},`;
+			var connectorTemp = `
+		{
+			type : "<<type>>",
+			name : "<<name>>"
+		},`;
+			var inCount = 0;
+			var outCount = 0;
+			$(function() {
+				$("#addInput").click(function() {
+					var elem = $("#connectorTemplate").clone().attr("style", "").attr("id", "input" + inCount++).attr("enable", true);
+
+					elem.find(".remove").click(function() {
+						$(this).parent().attr("style", "display:none").attr("enable", false);
+					});
+
+					elem.appendTo("#inputs");
+				});
+				$("#addOutput").click(function() {
+					var elem = $("#connectorTemplate").clone().attr("style", "").attr("id", "output" + outCount++).attr("enable", true);
+
+					elem.find(".remove").click(function() {
+						$(this).parent().attr("style", "display:none").attr("enable", false);
+					});
+
+					elem.appendTo("#outputs");
+				});
+				$("#generate").click(function() {
+					var ret = temp;
+					var inp = "";
+					for (var i = 0; i < inCount; i++) {
+						var elem = $("#input" + i);
+						if(elem.attr("enable") == "true")
+						{
+							var s = connectorTemp;
+							s = s.replace("<<type>>", elem.find(".type").val())
+							s = s.replace("<<name>>", elem.find(".name").val())
+							inp += s;
+						}
+					}
+					var out = "";
+					for (var i = 0; i < outCount; i++) {
+						var elem = $("#output" + i);
+						if(elem.attr("enable") == "true")
+						{
+							var s = connectorTemp;
+							s = s.replace("<<type>>", elem.find(".type").val())
+							s = s.replace("<<name>>", elem.find(".name").val())
+							out += s;
+						}
+					}
+					var gvars = "";
+					if($("#globalVars").val() != "")
+					{
+						var g = $("#globalVars").val().split("\n");
+						for (var i = 0; i < g.length; i++) {
+							var v = g[i].split(" ");
+							var s = connectorTemp;
+							s = s.replace("<<type>>", v[0])
+							s = s.replace("<<name>>", v[1])
+							gvars += s;
+						}
+					}
+
+					ret = ret.replace("<<name>>", $("#name").val());
+					ret = ret.replace("<<inputs>>", inp);
+					ret = ret.replace("<<outputs>>", out);
+					ret = ret.replace("<<becomes>>", $("#becomes").val());
+					ret = ret.replace("<<needsExecution>>", $("#needsExecution").is(":checked"));
+					ret = ret.replace("<<globalVars>>", gvars);
+					$("#return").html(ret);
+				});
+				var e = $("#connectorTemplate").clone().attr("style", "").attr("id", "input" + inCount++).attr("enable", true);
+
+				e.find(".remove").click(function() {
+					$(this).parent().attr("style", "display:none").attr("enable", false);
+				});
+				e.find(".name").val("exec");
+				e.appendTo("#inputs");
+
+				var el = $("#connectorTemplate").clone().attr("style", "").attr("id", "output" + outCount++).attr("enable", true);
+
+				el.find(".remove").click(function() {
+					$(this).parent().attr("style", "display:none").attr("enable", false);
+				});
+				el.find(".name").val("exec");
+				el.appendTo("#outputs");
+			});
+		</script>
+	</body>
+</html>

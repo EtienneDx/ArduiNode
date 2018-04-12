@@ -1,13 +1,9 @@
-import Toolbar from './Toolbar.js';
-import MapContainer from './MapContainer.js';
-import Node from './Node.js';
-import Input from './Input.js';
-import Output from './Output.js';
-
-export {
-  Toolbar,
-  MapContainer,
-  Node,
-  Input,
-  Output,
-}
+export { default as Toolbar } from './Toolbar.js';
+export { default as MapContainer } from './MapContainer.js';
+export { default as Node } from './Node.js';
+export { default as Input } from './Input.js';
+export { default as Output } from './Output.js';
+export { default as Variables } from './Variables.js';
+export { default as Details } from './Details.js';
+export { default as Var } from './Var.js';
+export { default as NodeTypeList } from './NodeTypeList';

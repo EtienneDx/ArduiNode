@@ -40,8 +40,8 @@
   text-align: right;
   width: fit-content;
   padding-left: 7px;
-  display: inline-block;
   vertical-align: top;
+  display: inline-block;
 }
 
 .Node-input :hover, .Node-output :hover {

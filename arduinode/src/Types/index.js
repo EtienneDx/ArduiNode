@@ -1,18 +1,7 @@
-import VarTypes, {
-  getPluggedImageForType,
-  getUnpluggedImageForType,
-  getColorForType
-} from './VarType';
+import * as VarTypes from './VarTypes';
 
-import type { VarType } from './VarType';
+export { VarTypes };
+export { default as NodeTypes } from './NodeTypes';
 
-export {
-  VarTypes,
-  getPluggedImageForType,
-  getUnpluggedImageForType,
-  getColorForType
-}
-
-export type {
-  VarType
-}
+export type { NodeType } from './NodeTypes';
+export type { VarType, Variable } from './VarTypes';
