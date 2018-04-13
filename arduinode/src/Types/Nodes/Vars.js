@@ -10,9 +10,7 @@ export default [
       },
     ],
     needsExecution : false,
-    becomes : `<<var>>`,
-    globalVars : [
-    ]
+    becomes : `<<var>>`
   },
   {
 	name : "Set",
@@ -34,8 +32,6 @@ export default [
 	],
 	needsExecution : true,
 	becomes : `<<var>> = <<inputs:value>>;
-<<outputs:exec>>`,
-	globalVars : [
-	]
+`
 },
 ]

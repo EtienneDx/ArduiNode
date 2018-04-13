@@ -34,7 +34,7 @@ else {
   <<outputs:false>>
 }
 <</outputs:false?>>
-<<outputs:exec>>`,
+`,
   },
   {
 	name : "Not",
@@ -52,6 +52,140 @@ else {
 	],
   needsExecution: false,
 	becomes : `!<<inputs:>>`,
+	globalVars : [
+	]
+},
+{
+	name : "Int x Int",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+		{
+			type : "Int",
+			name : "j"
+		},
+	],
+	outputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+	],
+	needsExecution : false,
+	becomes : `(<<inputs:i>> * <<inputs:j>>)`,
+	globalVars : [
+	]
+},
+{
+	name : "Int + Int",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+		{
+			type : "Int",
+			name : "j"
+		},
+	],
+	outputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+	],
+	needsExecution : false,
+	becomes : `(<<inputs:i>> + <<inputs:j>>)`,
+	globalVars : [
+	]
+},
+{
+	name : "Int / Int",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+		{
+			type : "Int",
+			name : "j"
+		},
+	],
+	outputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+	],
+	needsExecution : false,
+	becomes : `(<<inputs:i>> / <<inputs:j>>)`,
+	globalVars : [
+	]
+},
+{
+	name : "Int - Int",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+		{
+			type : "Int",
+			name : "j"
+		},
+	],
+	outputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+	],
+	needsExecution : false,
+	becomes : `(<<inputs:i>> - <<inputs:j>>)`,
+	globalVars : [
+	]
+},
+{
+	name : "Int % Int",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+		{
+			type : "Int",
+			name : "j"
+		},
+	],
+	outputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+	],
+	needsExecution : false,
+	becomes : `(<<inputs:i>> % <<inputs:j>>)`,
+	globalVars : [
+	]
+},
+{
+	name : "Int to Bool",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+	],
+	outputs : [
+		{
+			type : "Boolean",
+			name : "b"
+		},
+	],
+	needsExecution : false,
+	becomes : `<<inputs:i>>`,
 	globalVars : [
 	]
 },

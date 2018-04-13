@@ -1,10 +1,6 @@
 /* @flow */
 import * as Nodes from "./Nodes";
 
-/*****Import json node types*****/
-
-
-/*****Export*****/
 export type NodeType = {
   name : string,
   inputs : Array<{

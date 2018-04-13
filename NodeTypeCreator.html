@@ -14,7 +14,7 @@
 			Global vars : <br><br>
 			<textarea id="globalVars"></textarea><br>
 			Becomes : <br><br>
-			<textarea id="becomes"></textarea>
+			<textarea id="becomes" style="width:80%; height:50px;"></textarea>
 		</div>
 		<!--templates-->
 		<div id="connectorTemplate" style="display:none">
@@ -22,13 +22,13 @@
 			<select class="type">
 				<option value="Execution">Execution</option>
 				<option value="Pin">Pin</option>
-				<option value="Bool">Bool</option>
+				<option value="Boolean">Bool</option>
 				<option value="Int">Int</option>
 			</select><br>
 			Name : <input type="text" name="name" class="name" /><br>
 		</div>
 		<button id="generate">Generate</button><br>
-		<textarea id="return" style="width:80%; height:500px;"></textarea>
+		<textarea id="return" style="width:80%; height:400px;"></textarea>
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script type="text/javascript">
@@ -39,9 +39,7 @@
 	outputs : [<<outputs>>
 	],
 	needsExecution : <<needsExecution>>,
-	becomes : \`
-		<<becomes>>
-	\`,
+	becomes : \`<<becomes>>\`,
 	globalVars : [<<globalVars>>
 	]
 },`;

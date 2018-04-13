@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { Var } from './';
-import { VarTypes, NodeTypes } from '../Types';
+import { getVarType, NodeTypes } from '../Types';
 
 import type { HTMLUListElement, SyntheticMouseEvent } from 'flow';
 import type { Variable } from '../Types';
@@ -21,10 +21,10 @@ class Variables extends Component<Props> {
 
   newVar(e : SyntheticMouseEvent) {
     var v = {
-      type : VarTypes.Pin,
+      type : getVarType("Pin"),
       name : "new var",
       isArray : false,
-      value : { pin : 0, mode : "INPUT" },
+      value : getVarType("Pin").defaultValue,
     };
     this.props.vars.push(v);
     this.props.refresh();

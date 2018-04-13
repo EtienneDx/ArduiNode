@@ -162,7 +162,7 @@ function processNode(app : App, n : NodeType, i : number) : string {
 
 function replaceInputs (app : App, n : NodeType, nId : number, into : string) : string {
   n.inputs.forEach((input, i) => {
-      if(input.type !== VarTypes.Exec.name)// only NON Exec inputs
+      if(input.type !== VarTypes.Basics.Exec.name)// only NON Exec inputs
         into = into.replace("<<inputs:" + input.name + ">>", findInputValue(app, nId, i));
     });
 
@@ -171,9 +171,12 @@ function replaceInputs (app : App, n : NodeType, nId : number, into : string) : 
 
 function replaceOutputs (app : App, n : NodeType, nId : number, into : string) : string {
   n.outputs.forEach((output, i) => {
-      if(output.type === VarTypes.Exec.name) {// Only Exec outputs
+      if(output.type === VarTypes.Basics.Exec.name) {// Only Exec outputs
         const outV = findOutputValue(app, nId, i);
-        into = into.replace("<<outputs:" + output.name + ">>", outV);
+        if(into.includes("<<outputs:" + output.name + ">>"))
+          into = into.replace("<<outputs:" + output.name + ">>", outV);
+        else
+          into += outV;
         if(outV === "") {
           const regex = new RegExp("<<outputs:" + output.name + "\\?>>.*?<<\\/outputs:" + output.name + "\\?>>", "s");
           into = into.replace(regex, "");

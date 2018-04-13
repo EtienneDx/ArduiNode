@@ -4,7 +4,7 @@ import * as React from 'react';
 import type { HTMLDivElement, SyntheticDragEvent, SyntheticMouseEvent } from 'flow';
 
 import { Input, Output } from './';
-import { VarTypes } from '../Types';
+import { getVarType } from '../Types';
 import '../css/Node.css';
 
 import type NodeType from '../Types';
@@ -143,7 +143,7 @@ class Node extends React.Component<Props, State> {
             {this.props.type.inputs.map(
               input => (
                 <Input
-                  type={VarTypes.getVarType(input.type)}
+                  type={getVarType(input.type)}
                   name={input.name}
                   zoomLevel={this.props.zoomLevel}
                   needRepaint={this.props.needRepaint}
@@ -165,7 +165,7 @@ class Node extends React.Component<Props, State> {
             {this.props.type.outputs.map(
               output => (
                 <Output
-                  type={VarTypes.getVarType(output.type)}
+                  type={getVarType(output.type)}
                   name={output.name}
                   zoomLevel={this.props.zoomLevel}
                   needRepaint={this.props.needRepaint}
