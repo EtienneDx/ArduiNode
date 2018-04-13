@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable no-undef */
 import * as NodeTypes from './Nodes';
 
 var nodeTypeNames = [];

@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable no-undef */
 import * as VarTypes from './Vars';
 import { getVarType } from './';
 
