@@ -22,6 +22,9 @@ This will start the application into your brower, and you'll be good to go.
 ## Usage
 Once you have the application running, you can simply add nodes by clicking on their names in the toolbar on the right panel, and add variables on the left panel.
 Variables type and default values can be set by using the 'Details' button.
+You can delete nodes / inputs connections by holding the 'Alt' key and clicking on the node / connector.
+
+<!> The setup node is hidden under the loop one when openning the app, this will be solved shortly
 
 Once you're satisfied with your sketch, simply press the 'Generate code' button on the top left on the screen, and the code will be written into the browser console.
 To access this console, press 'Ctrl+Shift+J' on windows and linux or 'Command+Options+J' on mac.
@@ -35,4 +38,4 @@ Please read to the [contributing guide](CONTRIBUTING.md) for more informations a
 * Etienne Desrousseaux - Initial work
 
 ## License
-To come
+This project is licensed under the MIT License - See [License](LICENSE) file for details.
