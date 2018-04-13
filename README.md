@@ -34,6 +34,9 @@ You'll then be able to copy the code, paste it into an .ino file, and upload it 
 This project is still in development, and I'd therefore like any support you can provide, either from a feedback point of view and bug reporting, or from actual coding.
 Please read to the [contributing guide](CONTRIBUTING.md) for more informations about how to contribute.
 
+## Code of conduct
+Please respect the [code of conduct](CODE_OF_CONDUCT.md), to keep a good atmosphere on the project.
+
 ## Authors
 * Etienne Desrousseaux - Initial work
 
