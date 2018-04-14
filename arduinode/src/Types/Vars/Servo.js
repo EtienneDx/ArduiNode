@@ -10,7 +10,7 @@ const Servo : VarType = {
   name : SERVO,
   pluggedImage : objPlugged,
   unpluggedImage : objUnplugged,
-  color : "white",
+  color : "#1969a6",
   imports : "<Servo.h>",
   definition : `Servo <<name>>;
 `,
