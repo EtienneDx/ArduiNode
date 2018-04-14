@@ -45,7 +45,7 @@ class Output extends Component<Props, State> {
 
   connectTo(obj : Input) {
     if(!this.connectedTo.includes(obj)) {
-      if(this.props.type === VarTypes.Exec) {
+      if(this.props.type === VarTypes.Basics.Exec) {
         this.connectedTo.forEach(e => e.disconnect(this));
         this.connectedTo = [];
       }
@@ -92,7 +92,7 @@ class Output extends Component<Props, State> {
     if(this.props.getDraggedObject() instanceof Input && this.props.getDraggedObject().props.type === this.props.type)
     {
       e.preventDefault();
-      if(this.connectedTo && this.props.type === VarTypes.EXEC) {//exec outputs can have only one connection
+      if(this.props.type === VarTypes.Basics.Exec) {//exec outputs can have only one connection
         this.connectedTo.forEach(e => e.disconnect(this));
         this.connectedTo = [];
       }

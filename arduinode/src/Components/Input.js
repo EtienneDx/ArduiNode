@@ -46,9 +46,14 @@ class Input extends React.Component<Props, State> {
   connectedTo : Array<Output> = [];
 
   connectTo(obj : Output) {
-    if(!this.connectedTo.includes(obj))
+    if(!this.connectedTo.includes(obj)) {
+      if(this.props.type !== VarTypes.Basics.Exec) {
+        this.connectedTo.forEach(e => e.disconnect(this));
+        this.connectedTo = [];
+      }
       this.connectedTo.push(obj);
-    this.setState({});
+    }
+    this.setState({});//force re render
   }
 
   disconnect(obj : Output) {
@@ -133,7 +138,7 @@ class Input extends React.Component<Props, State> {
     if(this.props.getDraggedObject() instanceof Output && this.props.getDraggedObject().props.type === this.props.type)
     {
       e.preventDefault();
-      if(this.connectedTo.length > 0 && this.props.type !== VarTypes.EXEC) {//non exec can only have one connection on inputs
+      if(this.connectedTo.length > 0 && this.props.type !== VarTypes.Basics.Exec) {//non exec can only have one connection on inputs
         this.connectedTo.forEach(e => e.disconnect());
         this.connectedTo = [];
       }
