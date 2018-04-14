@@ -15,14 +15,14 @@ type State = {
     setObject : Function,
     objectType : string,
   },//the object being displayed in the details section
-  nodes : Array<NodeType>,
-  vars : Array<Variable>,
+  nodes : Array<NodeType>,// the list of nodes in the sketch
+  vars : Array<Variable>,// the list of vars in the sketch
 }
 
 class App extends Component<null, State> {
 
-  details : Details;
-  mapContainer : MapContainer;
+  details : Details;// the details panel
+  mapContainer : MapContainer;// the sketch panel
 
   state = {
     inspectedObject : null,
@@ -34,17 +34,17 @@ class App extends Component<null, State> {
   }
 
   refresh() {
-    this.mapContainer.checkConnections();
-    this.setState({});
+    this.mapContainer.checkConnections();// check if a node or a var have been disabled and require re-wiring
+    this.setState({});// force re render
   }
 
   addNode(n : NodeType) {
-    this.state.nodes.push(n);
-    this.setState({});
+    this.state.nodes.push(n);// add the node
+    this.setState({});// force re render
   }
 
   render() {
-    var i = 0;
+    //var i = 0;// the key of the nodes
     return (
       <div className="App">
         <header className="App-header">
@@ -71,7 +71,7 @@ class App extends Component<null, State> {
             <Details ref={e => this.details = e}/>
           </div>
           <MapContainer ref={e => this.mapContainer = e}>
-            {this.state.nodes.map(n => (
+            {this.state.nodes.map((n, i) => (
               <Node type={n} nodeKey={i} key={i++} getVar={i => this.state.vars[i]}/>
             ))}
           </MapContainer>
