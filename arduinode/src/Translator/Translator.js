@@ -5,9 +5,10 @@ import { VarTypes } from '../Types';
 
 import type NodeType from '../Types';
 
+// Here's the template in which everything will be replaced
 const codeTemplate =
 `/*
-* Code genrated with ArduiNode, a system created by Etienne Desrousseaux
+* Code genrated with ArduiNode, a system created initially by Etienne Desrousseaux
 * Date : <<date>>
 */
 
@@ -22,10 +23,11 @@ const codeTemplate =
 const importTemplate = `#include <<import>>
 `;
 
-var nodeVars = [];
+var nodeVars = [];// here will be kept the modified global vars name
 
 export default (app : App) => {
   console.log("Starting translation into code"); // eslint-disable-line
+  // we take the template and replace each category
   var code = codeTemplate;
 
   /***Basic infos***/
@@ -50,23 +52,23 @@ export default (app : App) => {
 
 /*******************Imports*******************/
 function getImports(app : App) {
-  var ret = "";
-  var imports = [];
+  var ret = "";// the returned string
+  var imports = [];// the list of all imports
   // imports from vars
-  app.state.vars.forEach(v => {
-    if(v.enabled !== false) {
-      if(typeof v.type.imports === "string")
+  app.state.vars.forEach(v => {// for each var
+    if(v.enabled !== false) {// if the var haven't been deleted
+      if(typeof v.type.imports === "string")// only one import
         imports.push(v.type.imports);
-      else if(Array.isArray(v.type.imports))
+      else if(Array.isArray(v.type.imports))//multiple imports
         imports = imports.concat(v.type.imports);
     }
   });
   // imports from nodes
-  app.state.nodes.forEach(n => {
-    if(n.enabled !== false) {
-      if(typeof n.imports === "string")
+  app.state.nodes.forEach(n => {// for each node
+    if(n.enabled !== false) {// if the node isn't deleted
+      if(typeof n.imports === "string")// single import
         imports.push(n.imports);
-      else if(Array.isArray(n.imports))
+      else if(Array.isArray(n.imports))//multiple imports
         imports = imports.concat(n.imports);
     }
   });
@@ -74,6 +76,7 @@ function getImports(app : App) {
       return imports.indexOf(item) === pos;
   });// we remove duplicates
 
+  // for each different import, we add the import template, having replaced what needs to be replaced
   imports.forEach(imp => ret += importTemplate.replace("<<import>>", imp));
 
   return ret;
@@ -81,35 +84,34 @@ function getImports(app : App) {
 
 /******************Vars******************/
 function getVarDefines(app : App) {
-  var ret = "";
-  var varNames = [];
+  var ret = "";// the returned string
+  var varNames = [];// the list of different names
   /***Global user vars***/
-  app.state.vars.filter(v => v.enabled !== false).forEach(v => {
-    const name = v.name.replace(" ", "_");
-    varNames.push(name);
-    var s = v.type.definition
-      .replace("<<name>>",  name);
-    s = replaceObject("value", v.value, s);
-    ret += s;
+  app.state.vars.filter(v => v.enabled !== false).forEach(v => {// for each non deleted var
+    const name = v.name.replace(" ", "_");// get a valid name
+    varNames.push(name);// add the name to the list of names
+    var s = v.type.definition.replace("<<name>>",  name);// get the definition
+    s = replaceObject("value", v.value, s);// replace the value
+    ret += s;// add the definition to the return value
   });
   /***Global nodes vars***/
-  app.state.nodes.forEach((n, i) => {
-    if(Array.isArray(n.globalVars)) {
+  app.state.nodes.forEach((n, i) => {// for each node
+    if(Array.isArray(n.globalVars)) {// if there's multiple global vars
       nodeVars[i] = {};
-      n.globalVars.forEach(v => {
-        var na = v.name.replace(" ", "_");
-        if(varNames.includes(na)) {
+      n.globalVars.forEach(v => {// for each global var
+        var na = v.name.replace(" ", "_");// valid name
+        if(varNames.includes(na)) {// if this name is already used
           var j = 0;
-          while (varNames.includes(na + j))
+          while (varNames.includes(na + j))// find another valid name
             j++;
-            na = na + j;
+            na = na + j;// set the other valid name
         }
-        nodeVars[i][v.name] = na;
-        varNames.push(na);
-        ret += v.type + " " + na + ";\n";
+        nodeVars[i][v.name] = na;// save the changed name
+        varNames.push(na);// push to the list of used names
+        ret += v.type + " " + na + ";\n";// add it to the return value
       })
-    } else if (typeof n.globalVars === "object") {
-      var na = n.globalVars.name.replace(" ", "_");
+    } else if (typeof n.globalVars === "object") {// single global var
+      var na = n.globalVars.name.replace(" ", "_");// same process as above
       if(varNames.includes(na)) {
         var j = 0;
         while (varNames.includes(na + j))
@@ -124,14 +126,14 @@ function getVarDefines(app : App) {
   return ret;
 }
 
+// returns the code used by vars inside the setup functions
 function getVarsSetup (app : App) {
-  var ret = "";
-  app.state.vars.filter(v => v.enabled !== false).forEach(v => {
-    if(typeof v.type.setupDefinition === "string") {
-      const name = v.name.replace(" ", "_");
-      var s = v.type.setupDefinition
-        .replace("<<name>>",  name);
-      s = replaceObject("value", v.value, s);
+  var ret = "";// return string
+  app.state.vars.filter(v => v.enabled !== false).forEach(v => {// for each enabled var
+    if(typeof v.type.setupDefinition === "string") {// if the definition is valid
+      const name = v.name.replace(" ", "_");// get valid var name
+      var s = v.type.setupDefinition.replace("<<name>>",  name);// get definition template
+      s = replaceObject("value", v.value, s);// and replace name and value(s)
       ret += s;
     }
   });
@@ -141,9 +143,10 @@ function getVarsSetup (app : App) {
 /***********Nodes***********/
 function getNodes(app : App) {
   var ret = "";
-  app.state.nodes.filter((n, i) => n.isStartupPoint === true && app.mapContainer.nodes[i].state.enabled === true)
-    .forEach((n, i) => {
-      ret += processNode(app, n, i);
+  app.state.nodes/*.filter((n, i) => n.isStartupPoint === true && app.mapContainer.nodes[i].state.enabled === true)*/
+    .forEach((n, i) => {// no filter to keep the valid i
+      if(n.isStartupPoint === true && app.mapContainer.nodes[i].state.enabled === true)
+        ret += processNode(app, n, i);
     });
 
   return ret;

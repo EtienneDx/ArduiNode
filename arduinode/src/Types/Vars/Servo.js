@@ -1,6 +1,7 @@
 /* @flow */
 import type VarType from '../';
 
+// default images for objects
 import objUnplugged from '../../resources/Obj_Unplugged.png';
 import objPlugged from '../../resources/Obj_Plugged.png';
 

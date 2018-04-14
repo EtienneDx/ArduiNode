@@ -22,10 +22,10 @@ export const objectColor = "#1969a6";
 
 function getVarType(type : string) {
   var ret;
-  Object.values(VarTypes).forEach(category => {
-    Object.values(category).forEach(vtype => {
+  Object.values(VarTypes).forEach(category => {// check into each category
+    Object.values(category).forEach(vtype => {// and into each type
       // $FlowFixMe
-      if(vtype.name === type)
+      if(vtype.name === type)// and return the first type that correspond to the name
         ret = vtype;
     });
   });
