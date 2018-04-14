@@ -49,7 +49,7 @@ export default {
     definition : `bool <<name>> = <<value>>;
 `,
     defaultValue : false,
-    valueFormat : "bool",
+    valueFormat : "boolean",
   },
   Int : {
     name : INT,

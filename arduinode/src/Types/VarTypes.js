@@ -1,6 +1,7 @@
 /* @flow */
 import * as VarTypes from './Vars';
 
+// Refer to wiki for more infos
 export type VarType = {
   name : string,// name of the type of var
   imports : ?(Array<string> | string),

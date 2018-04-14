@@ -76,7 +76,7 @@ class Details extends Component<null, State> {
       return (<TextInput name={name} value={realVal} onChange={onChange} key={valueId} />);
     } else if(typeof obj === "string" && obj === "number") {
       return (<NumInput name={name} value={realVal} onChange={onChange} key={valueId} />);
-    } else if(typeof obj === "string" && obj === "bool") {
+    } else if(typeof obj === "string" && obj === "boolean") {
       return (<BoolInput name={name} value={realVal} onChange={onChange} key={valueId} />);
     } else if(Array.isArray(obj)) {
       return (<SelectInput name={name} value={realVal} onChange={onChange} options={obj} key={valueId} />)
