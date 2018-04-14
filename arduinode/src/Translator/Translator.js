@@ -143,48 +143,50 @@ function getVarsSetup (app : App) {
 /***********Nodes***********/
 function getNodes(app : App) {
   var ret = "";
-  app.state.nodes/*.filter((n, i) => n.isStartupPoint === true && app.mapContainer.nodes[i].state.enabled === true)*/
-    .forEach((n, i) => {// no filter to keep the valid i
+  app.state.nodes.forEach((n, i) => {// for each node
+      // no filter to keep the valid i
+      // is the node a sttartup point and enabled?
       if(n.isStartupPoint === true && app.mapContainer.nodes[i].state.enabled === true)
-        ret += processNode(app, n, i);
+        ret += processNode(app, n, i);// process it and add the code
     });
 
   return ret;
 }
 
 function processNode(app : App, n : NodeType, i : number) : string {
-  var s = n.becomes;
-  s = replaceInputs(app, n, i, s);
-  s = replaceOutputs(app, n, i, s);
-  if(n.name === "Get" || n.name === "Set") {
-    const target = app.mapContainer.nodes[i].props.type.target;
-    s = s.replace("<<var>>", app.state.vars[target].name.replace(" ", "_"));
+  var s = n.becomes;// get the node template
+  s = replaceInputs(app, n, i, s);// replace <<inputs:...>>
+  s = replaceOutputs(app, n, i, s);// replace <<outputs:...>>
+  if(n.name === "Get" || n.name === "Set") {// if variable related node
+    const target = app.mapContainer.nodes[i].props.type.target;// get target var id
+    s = s.replace("<<var>>", app.state.vars[target].name.replace(" ", "_"));// replace <<var>> by the var name
   }
   return s;
 }
 
 function replaceInputs (app : App, n : NodeType, nId : number, into : string) : string {
-  n.inputs.forEach((input, i) => {
+  n.inputs.forEach((input, i) => {// for each input of the node
       if(input.type !== VarTypes.Basics.Exec.name)// only NON Exec inputs
-        into = into.replace("<<inputs:" + input.name + ">>", findInputValue(app, nId, i));
+        into = into.replace("<<inputs:" + input.name + ">>", findInputValue(app, nId, i));//replace the input by its value
     });
 
   return into;
 }
 
 function replaceOutputs (app : App, n : NodeType, nId : number, into : string) : string {
-  n.outputs.forEach((output, i) => {
+  n.outputs.forEach((output, i) => {// for each output
       if(output.type === VarTypes.Basics.Exec.name) {// Only Exec outputs
-        const outV = findOutputValue(app, nId, i);
-        if(into.includes("<<outputs:" + output.name + ">>"))
-          into = into.replace("<<outputs:" + output.name + ">>", outV);
-        else
-          into += outV;
-        if(outV === "") {
+        const outV = findOutputValue(app, nId, i);// get the output value
+        if(into.includes("<<outputs:" + output.name + ">>"))// if the output is used
+          into = into.replace("<<outputs:" + output.name + ">>", outV);// we replace it
+        else// if it isn't
+          into += outV;// we add it to the end
+        if(outV === "") {// if there's no connection
+          // we replace what needs to be
           const regex = new RegExp("<<outputs:" + output.name + "\\?>>.*?<<\\/outputs:" + output.name + "\\?>>", "s");
           into = into.replace(regex, "");
         }
-        else {
+        else {// if there's a connection, we get rid of the unused stuff
           into = into.replace("<<outputs:" + output.name + "?>>", "")
                   .replace("<</outputs:" + output.name + "?>>", "");
         }
@@ -195,52 +197,51 @@ function replaceOutputs (app : App, n : NodeType, nId : number, into : string) :
 }
 
 function findInputValue(app : App, nId : number, inId : number) : string {
-  const input = app.mapContainer.nodes[nId].inputs[inId];
+  const input = app.mapContainer.nodes[nId].inputs[inId];// we get the concerned input
   if(Array.isArray(input.connectedTo) && input.connectedTo.length === 1) {// there's one connection
-      const outId = input.connectedTo[0].props.connectorId;
-      if(input.connectedTo[0].props.parent.props.type.needsExecution === false)
-        return processNode(app,
-          input.connectedTo[0].props.parent.props.type,
-          input.connectedTo[0].props.parent.props.nodeKey);
-      else {
-        var bec = input.connectedTo[0].props.parent.props.type.outputs[outId].becomes;
-        return replaceGlobalVars(bec, input.connectedTo[0].props.parent);
-      }
+    const outParent = input.connectedTo[0].props.parent;// the node to which it is connected
+    const outId = input.connectedTo[0].props.connectorId;// the id of the output relative to the node parent
+    if(outParent.props.type.needsExecution === false)// if the node only returns a value, we process the node
+      return processNode(app, outParent.props.type, outParent.props.nodeKey);
+    else {// if the node uses execution, we use the output becomes and replace global vars
+      var bec = outParent.props.type.outputs[outId].becomes;
+      return replaceGlobalVars(bec, outParent);
     }
+  }
   return "null";// if the node isn't connected
 }
 
 function findOutputValue(app : App, nId : number, outId : number) : string {
-  if(Array.isArray(app.mapContainer.nodes[nId].outputs[outId].connectedTo) &&
-    app.mapContainer.nodes[nId].outputs[outId].connectedTo.length === 1) {// there's one connection
-      return processNode(app,
-        app.mapContainer.nodes[nId].outputs[outId].connectedTo[0].props.parent.props.type,
-        app.mapContainer.nodes[nId].outputs[outId].connectedTo[0].props.parent.props.nodeKey);
-    }
-  return "";
+  const output = app.mapContainer.nodes[nId].outputs[outId];// we get the concerned output
+  if(Array.isArray(output.connectedTo) && output.connectedTo.length === 1) {// there's one connection
+    const targetNodeProps = output.connectedTo[0].props.parent.props;//we get the props of the target node
+    return processNode(app, targetNodeProps.type, targetNodeProps.nodeKey);// and process that node
+  }
+  return "";// if the node isn't connected
 }
 
 function replaceGlobalVars(into, node) {
-  var gVars = {};
-  if(typeof node.props.type.globalVars === "object") {
+  var gVars = {};// the object containing the global vars of the node
+  if(typeof node.props.type.globalVars === "object") {// if single gvars
+    // we assign it
     gVars[node.props.type.globalVars.name] = nodeVars[node.props.nodeKey][node.type.globalVars.name];
-  } else if (Array.isArray(node.props.type.globalVars)) {
-    node.props.type.globalVars.forEach(v => {
-      gVars[v.name] = nodeVars[node.props.nodeKey][v.name];
+  } else if (Array.isArray(node.props.type.globalVars)) {// if multiple
+    node.props.type.globalVars.forEach(v => {// for each gvar
+      gVars[v.name] = nodeVars[node.props.nodeKey][v.name];// we assign it
     });
   }
-  return replaceObject("globalVars", gVars, into);
+  return replaceObject("globalVars", gVars, into);// then we simply replace the object
 }
 
 /***********Utils***********/
 
 /// actualPath is the "path" to the actual object, formatted like "path:to:object"
 function replaceObject(actualPath : string, obj : any, into : string) : string {
-  if(typeof obj === "object")
-    Object.entries(obj).forEach(data => {
-      into = replaceObject(actualPath + ":" + data[0], data[1], into);
+  if(typeof obj === "object")// if we have an object
+    Object.entries(obj).forEach(data => {// we take each sub object
+      into = replaceObject(actualPath + ":" + data[0], data[1], into);// and replace the sub object
     });
   else// it isn't an object
-    return into.replace("<<" + actualPath + ">>", obj);
+    return into.replace("<<" + actualPath + ">>", obj);// we replace it directly
   return into;
 }
