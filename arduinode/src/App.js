@@ -71,9 +71,19 @@ class App extends Component<null, State> {
             <Details ref={e => this.details = e}/>
           </div>
           <MapContainer ref={e => this.mapContainer = e}>
-            {this.state.nodes.map((n, i) => (
-              <Node type={n} nodeKey={i} key={i++} getVar={i => this.state.vars[i]}/>
-            ))}
+            {this.state.nodes.map((n, i) => {
+              const x = i > 1 ? null : 2100;// hard coded starting positions for setup and loop
+              const y = i > 1 ? null : (i === 0 ? 2200 : 2400);
+              return (
+              <Node
+                type={n}
+                nodeKey={i}
+                key={i++}
+                getVar={i => this.state.vars[i]}
+                initialPosX={x}
+                initialPosY={y}
+              />
+            )})}
           </MapContainer>
           <div className="right-toolbar">
             <Toolbar addNode={n => this.addNode(n)}/>
