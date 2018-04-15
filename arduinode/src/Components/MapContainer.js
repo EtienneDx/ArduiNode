@@ -104,6 +104,14 @@ class MapContainer extends React.Component<Props, State> {
     });
   }
 
+  getCenterX() {
+    return -this.state.posX + (this.frame.clientWidth / 2) / zoomCorrespondances[this.state.zoomLevel];
+  }
+
+  getCenterY() {
+    return -this.state.posY + (this.frame.clientHeight / 2) / zoomCorrespondances[this.state.zoomLevel];
+  }
+
   render() {
     this.needRepaint = true;
     setTimeout(() => this.paintCanvas(this.canvas.getContext('2d')), 10);// eslint-disable-line
@@ -115,8 +123,8 @@ class MapContainer extends React.Component<Props, State> {
       MozTransform: 'scale(' + realZoom.toString() + ')',
     };
     //var id = 0;
-    const childrenWithProps = this.container !== undefined ? React.Children.map(this.props.children, child =>
-      React.cloneElement(child, {
+    const childrenWithProps = this.container !== undefined ? React.Children.map(this.props.children, child => {
+      return React.cloneElement(child, {
         zoomLevel: realZoom,
         ref: n => {
           if(n)
@@ -131,7 +139,9 @@ class MapContainer extends React.Component<Props, State> {
         },
         setDraggedObject: obj => this.actuallyDraggedObject = obj,
         getDraggedObject : () => this.actuallyDraggedObject,
-      })) : null;
+        initialPosX : typeof child.props.initialPosX === "number" ? child.props.initialPosX : this.getCenterX(),
+        initialPosY : typeof child.props.initialPosY === "number" ? child.props.initialPosY : this.getCenterY(),
+      })}) : null;
     return (
       <div className="MapContainer">
         MapContainer

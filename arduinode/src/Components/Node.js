@@ -30,19 +30,24 @@ type Props = {
   setDraggedObject : Function,
   getDraggedObject : Function,
   getVar : Function,
+  initialPosX : number,
+  initialPosY : number,
 }
 
 class Node extends React.Component<Props, State> {
 
-  state = {
-    mouseStartX : 0,
-    mouseStartY : 0,
-    startPosX : 50,
-    startPosY : 50,
-    posX : 2200,
-    posY : 2200,
-    enabled : true,
-  };
+  constructor(props : Props) {
+    super(props);
+    this.state = {
+      mouseStartX : 0,
+      mouseStartY : 0,
+      startPosX : 50,
+      startPosY : 50,
+      posX : props.initialPosX,
+      posY : props.initialPosY,
+      enabled : true,
+    };
+  }
 
   divElement : HTMLDivElement;
   inputs : Array<Input> = [];
