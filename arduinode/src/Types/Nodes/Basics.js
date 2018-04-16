@@ -37,6 +37,132 @@ else {
 `,
   },
   {
+	name : "Int >",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+		{
+			type : "Int",
+			name : "j"
+		},
+	],
+	outputs : [
+		{
+			type : "Boolean",
+			name : ""
+		},
+	],
+	needsExecution : false,
+	becomes : `(<<inputs:i>> > <<inputs:j>>)`,
+},
+  {
+	name : "Int >=",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+		{
+			type : "Int",
+			name : "j"
+		},
+	],
+	outputs : [
+		{
+			type : "Boolean",
+			name : ""
+		},
+	],
+	needsExecution : false,
+	becomes : `(<<inputs:i>> >= <<inputs:j>>)`,
+},
+  {
+	name : "Int <",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+		{
+			type : "Int",
+			name : "j"
+		},
+	],
+	outputs : [
+		{
+			type : "Boolean",
+			name : ""
+		},
+	],
+	needsExecution : false,
+	becomes : `(<<inputs:i>> < <<inputs:j>>)`,
+},
+  {
+	name : "Int <=",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+		{
+			type : "Int",
+			name : "j"
+		},
+	],
+	outputs : [
+		{
+			type : "Boolean",
+			name : ""
+		},
+	],
+	needsExecution : false,
+	becomes : `(<<inputs:i>> <= <<inputs:j>>)`,
+},
+  {
+	name : "Int ==",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+		{
+			type : "Int",
+			name : "j"
+		},
+	],
+	outputs : [
+		{
+			type : "Boolean",
+			name : ""
+		},
+	],
+	needsExecution : false,
+	becomes : `(<<inputs:i>> == <<inputs:j>>)`,
+},
+  {
+	name : "Int !=",
+	inputs : [
+		{
+			type : "Int",
+			name : "i"
+		},
+		{
+			type : "Int",
+			name : "j"
+		},
+	],
+	outputs : [
+		{
+			type : "Boolean",
+			name : ""
+		},
+	],
+	needsExecution : false,
+	becomes : `(<<inputs:i>> != <<inputs:j>>)`,
+},
+  {
 	name : "Not",
 	inputs : [
 		{
@@ -54,6 +180,46 @@ else {
 	becomes : `!<<inputs:>>`,
 	globalVars : [
 	]
+},
+{
+	name : "AND",
+	inputs : [
+		{
+			type : "Boolean",
+			name : ""
+		},
+		{
+			type : "Boolean",
+			name : "_"
+		},],
+	outputs : [
+		{
+			type : "Boolean",
+			name : ""
+		},],
+	needsExecution : false,
+	becomes : `(<<inputs:>> && <<inputs:_>>)`,
+	globalVars : [],
+},
+{
+	name : "OR",
+	inputs : [
+		{
+			type : "Boolean",
+			name : ""
+		},
+		{
+			type : "Boolean",
+			name : "_"
+		},],
+	outputs : [
+		{
+			type : "Boolean",
+			name : ""
+		},],
+	needsExecution : false,
+	becomes : `(<<inputs:>> ¦¦ <<inputs:_>>)`,
+	globalVars : [],
 },
 {
 	name : "Int x Int",
