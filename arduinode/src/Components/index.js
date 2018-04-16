@@ -7,3 +7,4 @@ export { default as Variables } from './Variables.js';
 export { default as Details } from './Details.js';
 export { default as Var } from './Var.js';
 export { default as NodeTypeList } from './NodeTypeList';
+export { default as OutputBox } from './OutputBox';

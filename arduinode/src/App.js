@@ -1,7 +1,7 @@
 /* @flow */
 import React, { Component } from 'react';
 
-import { Toolbar, MapContainer, Node, Variables, Details } from './Components';
+import { Toolbar, MapContainer, Node, Variables, Details, OutputBox } from './Components';
 import './css/App.css';
 
 import { NodeTypes } from './Types';
@@ -17,6 +17,8 @@ type State = {
   },//the object being displayed in the details section
   nodes : Array<NodeType>,// the list of nodes in the sketch
   vars : Array<Variable>,// the list of vars in the sketch
+  outputShown : boolean,
+  output : string,
 }
 
 class App extends Component<null, State> {
@@ -31,6 +33,8 @@ class App extends Component<null, State> {
       NodeTypes.Arduino[1],
     ],
     vars : [],
+    outputShown : false,
+    output : "",
   }
 
   refresh() {
@@ -51,13 +55,14 @@ class App extends Component<null, State> {
           <h1 className="App-title">Welcome to ArduiNode</h1>
           <div style={{textAlign: "left"}}>
             <button onClick={e => {
-              Translator(this);
+              this.setState({ output : Translator(this), outputShown : true });
             }}>
               Generate code
             </button>
           </div>
         </header>
         <div className="App-container">
+          <OutputBox data={this.state.output} shown={this.state.outputShown} toggleShown={() => this.setState({ outputShown : false })}></OutputBox>
           <div className="left-toolbar">
             <Variables
               setDetails={obj => {

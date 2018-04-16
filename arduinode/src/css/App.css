@@ -108,3 +108,29 @@ body, html, #root {
 li {
   text-align: left;
 }
+
+.OutputBox {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  z-index: 15;
+  top: 50%;
+  left: 50%;
+  margin: -35% 0 0 -35%;
+  background: #bbb;
+  border-radius: 15px;
+  overflow-x: scroll;
+}
+
+.OutputBox #code {
+  margin: 10px;
+  padding: 5px;
+  text-align: left;
+  border-radius: 5px;
+  background-color: #ccc;
+}
+
+::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
