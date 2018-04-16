@@ -5,7 +5,7 @@ import { Toolbar, MapContainer, Node, Variables, Details, OutputBox } from './Co
 import './css/App.css';
 
 import { NodeTypes } from './Types';
-import { Translator } from './Translator';
+import { Translator, FileTranslator } from './Translator';
 
 import type { Variable, NodeType } from './Types';
 
@@ -58,6 +58,11 @@ class App extends Component<null, State> {
               this.setState({ output : Translator(this), outputShown : true });
             }}>
               Generate code
+            </button>
+            <button onClick={e => {
+              this.setState({ output : FileTranslator(this), outputShown : true });
+            }}>
+              Save sketch
             </button>
           </div>
         </header>
