@@ -24,11 +24,8 @@ Once you have the application running, you can simply add nodes by clicking on t
 Variables type and default values can be set by using the 'Details' button.
 You can delete nodes / inputs connections by holding the 'Alt' key and clicking on the node / connector.
 
-<!> The setup node is hidden under the loop one when openning the app, this will be solved shortly
-
-Once you're satisfied with your sketch, simply press the 'Generate code' button on the top left on the screen, and the code will be written into the browser console.
-To access this console, press 'Ctrl+Shift+J' on windows and linux or 'Command+Options+J' on mac.
-You'll then be able to copy the code, paste it into an .ino file, and upload it to any Arduino card, by using the usual IDE.
+Once you're satisfied with your sketch, simply press the 'Generate code' button on the top left on the screen, and the code will be displayed in the middle of the screen.
+You'll then be able to copy the code, paste it into a .ino file, and upload it to any Arduino card, by using the usual IDE.
 
 More details on the [wiki](https://github.com/EtienneDx/ArduiNode/wiki/How-to-use-ArduiNode)
 
