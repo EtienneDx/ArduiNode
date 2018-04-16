@@ -328,7 +328,7 @@ else {
         needsExecution: true,
         becomes: `for(int i = <<inputs:from>>; i < <<inputs:until>>; i++)
 {
-    <outputs:loop>>
+    <<outputs:loop>>
 }
 <<outputs:then>>`,
         globalVars: [],
@@ -356,7 +356,7 @@ else {
         needsExecution: true,
         becomes: `while(<<inputs:condition>>)
 {
-    <outputs:loop>>
+    <<outputs:loop>>
 }
 <<outputs:then>>`,
         globalVars: [],
@@ -384,7 +384,7 @@ else {
         needsExecution: true,
         becomes: `do
 {
-    <outputs:loop>>
+    <<outputs:loop>>
 } while(<<inputs:condition>>);
 <<outputs:then>>`,
         globalVars: [],
