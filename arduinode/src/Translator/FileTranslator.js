@@ -1,7 +1,10 @@
 /* @flow */
 import App from '../App';
+import fileDownload from 'js-file-download';
 
-export default (app : App) => {
+import { getVarType, getNodeType } from '../Types';
+
+export function AppToFileTranslator (app : App, directDownload : boolean) {
   var obj = {};
   /*****Vars*****/
   obj.vars = {};
@@ -20,14 +23,20 @@ export default (app : App) => {
     if(app.mapContainer.nodes[i].state.enabled === true) {// is the node enabled
       obj.nodes[i] = {};
       obj.nodes[i].type = n.name;// node type
+      obj.nodes[i].pos = {};
+      obj.nodes[i].pos.x = app.mapContainer.nodes[i].state.posX;
+      obj.nodes[i].pos.y = app.mapContainer.nodes[i].state.posY;
       obj.nodes[i].inputs = {};
       obj.nodes[i].outputs = {};
+      if(n.name === "Get" || n.name === "Set") {
+        obj.nodes[i].target = n.target;
+      }
       n.inputs.forEach((input, j) => {
         obj.nodes[i].inputs[j] =
           app.mapContainer.nodes[i].inputs[j].connectedTo.map(output => {
             return {
               nodeKey : output.props.parent.props.nodeKey,
-              connectorId : output.connectorId,
+              connectorId : output.props.connectorId,
             };
           });
       });
@@ -36,12 +45,63 @@ export default (app : App) => {
           app.mapContainer.nodes[i].outputs[j].connectedTo.map(input => {
             return {
               nodeKey : input.props.parent.props.nodeKey,
-              connectorId : input.connectorId,
+              connectorId : input.props.connectorId,
             };
           });
       });
     }
   });
 
+  if(directDownload === true) {
+    fileDownload(JSON.stringify(obj), 'mysketch.arduinode');
+  }
   return JSON.stringify(obj);
+}
+
+export function FileToAppTranslator (app : App, obj : Object) {
+  app.state.vars = [];
+  Object.entries(obj.vars).forEach((data : [string, any]) => {
+    const realV = {
+      type : getVarType(data[1].type),
+      name : data[1].name,
+      isArray : false,
+      value : data[1].value,
+    };
+    app.state.vars[parseInt(data[0], 10)] = realV;
+  });
+
+  app.state.nodes = [];
+  Object.entries(obj.nodes).forEach((data : [string, any]) => {
+    const node = Object.assign({}, getNodeType(data[1].type));
+    node.initialPosX = data[1].pos.x;
+    node.initialPosY = data[1].pos.y;
+    if(node.name === "Get" || node.name === "Set") {
+      node.target = parseInt(data[1].target, 10);
+    }
+    app.state.nodes.push(node);
+  });
+
+  app.setState({}, () => {// we draw the nodes, and then connect the connectors
+    Object.entries(obj.nodes).forEach((data : [string, any]) => {
+      const i = parseInt(data[0], 10);
+      Object.entries(data[1].inputs).forEach((inputData : [string, any]) => {// inputData[1] is Array<{nodeKey : string, connectorId : string}>
+        const j = parseInt(inputData[0], 10);
+        const mapContainer = app.mapContainer;
+        mapContainer.nodes[i].inputs[j].connectedTo =
+          inputData[1].map(o => {
+            return mapContainer.nodes[parseInt(o.nodeKey, 10)].outputs[parseInt(o.connectorId, 10)];
+          });
+      });
+      Object.entries(data[1].outputs).forEach((outputData : [string, any]) => {// inputData[1] is Array<{nodeKey : string, connectorId : string}>
+        const j = parseInt(outputData[0], 10);
+        const mapContainer = app.mapContainer;
+        mapContainer.nodes[i].outputs[j].connectedTo =
+          outputData[1].map(o => {
+            return mapContainer.nodes[parseInt(o.nodeKey, 10)].inputs[parseInt(o.connectorId, 10)];
+          });
+      });
+    });
+  });
+
+  app.setState({});// redraw app
 }

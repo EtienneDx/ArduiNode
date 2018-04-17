@@ -1,5 +1,6 @@
 /* @flow */
 import React, { Component } from 'react';
+import ReactFileReader from 'react-file-reader';
 
 import { Toolbar, MapContainer, Node, Variables, Details, OutputBox } from './Components';
 import './css/App.css';
@@ -20,6 +21,13 @@ type State = {
   outputShown : boolean,
   output : string,
 }
+// hard coded starting positions for setup and loop
+const setupNode = Object.assign({}, NodeTypes.Arduino[0]);
+setupNode.initialPosX = 2100;
+setupNode.initialPosY = 2200;
+const loopNode = Object.assign({}, NodeTypes.Arduino[1]);
+loopNode.initialPosX = 2100;
+loopNode.initialPosY = 2400;
 
 class App extends Component<null, State> {
 
@@ -29,8 +37,8 @@ class App extends Component<null, State> {
   state = {
     inspectedObject : null,
     nodes : [
-      NodeTypes.Arduino[0],
-      NodeTypes.Arduino[1],
+      setupNode,
+      loopNode,
     ],
     vars : [],
     outputShown : false,
@@ -47,6 +55,16 @@ class App extends Component<null, State> {
     this.setState({});// force re render
   }
 
+  handleFiles(files : any) {
+    const app = this;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      // Use reader.result
+      FileTranslator.FileToAppTranslator(app, JSON.parse(reader.result.toString()));
+    }
+    reader.readAsText(files[0]);
+  }
+
   render() {
     //var i = 0;// the key of the nodes
     return (
@@ -60,10 +78,13 @@ class App extends Component<null, State> {
               Generate code
             </button>
             <button onClick={e => {
-              this.setState({ output : FileTranslator(this), outputShown : true });
+              this.setState({ output : FileTranslator.AppToFileTranslator(this, true), outputShown : true });
             }}>
               Save sketch
             </button>
+            <ReactFileReader handleFiles={files => this.handleFiles(files)} fileTypes={'.arduinode'}>
+              <button className='btn'>Load sketch</button>
+            </ReactFileReader>
           </div>
         </header>
         <div className="App-container">
@@ -82,8 +103,8 @@ class App extends Component<null, State> {
           </div>
           <MapContainer ref={e => this.mapContainer = e}>
             {this.state.nodes.map((n, i) => {
-              const x = i > 1 ? null : 2100;// hard coded starting positions for setup and loop
-              const y = i > 1 ? null : (i === 0 ? 2200 : 2400);
+              const x = typeof n.initialPosX === "number" ? n.initialPosX : null;
+              const y = typeof n.initialPosY === "number" ? n.initialPosY : null;
               return (
               <Node
                 type={n}
