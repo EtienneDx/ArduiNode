@@ -24,7 +24,7 @@ class Variables extends Component<Props> {
       type : getVarType("Pin"),
       name : "new var",
       isArray : false,
-      value : getVarType("Pin").defaultValue,
+      value : Object.assign({}, getVarType("Pin").defaultValue),
     };
     this.props.vars.push(v);
     this.props.refresh();
