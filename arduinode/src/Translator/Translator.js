@@ -96,6 +96,7 @@ function getVarDefines(app : App) {
   });
   /***Global nodes vars***/
   app.state.nodes.forEach((n, i) => {// for each node
+    if(n === null) return;
     if(Array.isArray(n.globalVars)) {// if there's multiple global vars
       nodeVars[i] = {};
       n.globalVars.forEach(v => {// for each global var
@@ -224,7 +225,7 @@ function replaceGlobalVars(into, node) {
   var gVars = {};// the object containing the global vars of the node
   if(typeof node.props.type.globalVars === "object") {// if single gvars
     // we assign it
-    gVars[node.props.type.globalVars.name] = nodeVars[node.props.nodeKey][node.type.globalVars.name];
+    gVars[node.props.type.globalVars.name] = nodeVars[node.props.nodeKey][node.props.type.globalVars.name];
   } else if (Array.isArray(node.props.type.globalVars)) {// if multiple
     node.props.type.globalVars.forEach(v => {// for each gvar
       gVars[v.name] = nodeVars[node.props.nodeKey][v.name];// we assign it
