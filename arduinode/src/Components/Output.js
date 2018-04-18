@@ -61,11 +61,11 @@ class Output extends Component<Props, State> {
   }
 
   getPosX() {
-    return this.props.nodePosX + this.image.offsetLeft + this.image.width;
+    return this.props.nodePosX + (this.image ? (this.image.offsetLeft + this.image.width) : 0);
   }
 
   getPosY() {
-    return this.props.nodePosY + this.image.offsetTop + this.image.height / 2;
+    return this.props.nodePosY + (this.image ? (this.image.offsetTop + this.image.height / 2) : 0);
   }
 
   getImageUrl() {

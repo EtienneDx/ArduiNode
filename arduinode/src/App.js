@@ -109,8 +109,8 @@ class App extends Component<null, State> {
               <Node
                 type={n}
                 nodeKey={i}
-                key={i++}
-                getVar={i => this.state.vars[i]}
+                key={i}
+                getVar={j => this.state.vars[j]}
                 initialPosX={x}
                 initialPosY={y}
               />

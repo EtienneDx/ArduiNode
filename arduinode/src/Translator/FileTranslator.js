@@ -20,7 +20,7 @@ export function AppToFileTranslator (app : App, directDownload : boolean) {
   /*****Nodes*****/
   obj.nodes = {};
   app.state.nodes.forEach((n, i) => {// for each node (n is NodeType)
-    if(app.mapContainer.nodes[i].state.enabled === true) {// is the node enabled
+    if(app.mapContainer.nodes[i] !== null && app.mapContainer.nodes[i].state.enabled === true) {// is the node enabled
       obj.nodes[i] = {};
       obj.nodes[i].type = n.name;// node type
       obj.nodes[i].pos = {};
@@ -70,38 +70,39 @@ export function FileToAppTranslator (app : App, obj : Object) {
     app.state.vars[parseInt(data[0], 10)] = realV;
   });
 
-  app.state.nodes = [];
-  Object.entries(obj.nodes).forEach((data : [string, any]) => {
-    const node = Object.assign({}, getNodeType(data[1].type));
-    node.initialPosX = data[1].pos.x;
-    node.initialPosY = data[1].pos.y;
-    if(node.name === "Get" || node.name === "Set") {
-      node.target = parseInt(data[1].target, 10);
-    }
-    app.state.nodes.push(node);
-  });
-
-  app.setState({}, () => {// we draw the nodes, and then connect the connectors
+  app.mapContainer.nodes = [];
+  app.setState({ nodes : [] }, () => {// need to clear the way so that the initial positions are taken into account
     Object.entries(obj.nodes).forEach((data : [string, any]) => {
-      const i = parseInt(data[0], 10);
-      Object.entries(data[1].inputs).forEach((inputData : [string, any]) => {// inputData[1] is Array<{nodeKey : string, connectorId : string}>
-        const j = parseInt(inputData[0], 10);
-        const mapContainer = app.mapContainer;
-        mapContainer.nodes[i].inputs[j].connectedTo =
-          inputData[1].map(o => {
-            return mapContainer.nodes[parseInt(o.nodeKey, 10)].outputs[parseInt(o.connectorId, 10)];
-          });
-      });
-      Object.entries(data[1].outputs).forEach((outputData : [string, any]) => {// inputData[1] is Array<{nodeKey : string, connectorId : string}>
-        const j = parseInt(outputData[0], 10);
-        const mapContainer = app.mapContainer;
-        mapContainer.nodes[i].outputs[j].connectedTo =
-          outputData[1].map(o => {
-            return mapContainer.nodes[parseInt(o.nodeKey, 10)].inputs[parseInt(o.connectorId, 10)];
-          });
+      const node = Object.assign({}, getNodeType(data[1].type));
+      node.initialPosX = data[1].pos.x;
+      node.initialPosY = data[1].pos.y;
+      if(node.name === "Get" || node.name === "Set") {
+        node.target = parseInt(data[1].target, 10);
+      }
+      app.state.nodes[parseInt(data[0], 10)] = node;
+    });
+
+    app.setState({}, () => {// we draw the nodes, and then connect the connectors
+      Object.entries(obj.nodes).forEach((data : [string, any]) => {
+        const i = parseInt(data[0], 10);
+        Object.entries(data[1].inputs).forEach((inputData : [string, any]) => {// inputData[1] is Array<{nodeKey : string, connectorId : string}>
+          const j = parseInt(inputData[0], 10);
+          const mapContainer = app.mapContainer;
+          mapContainer.nodes[i].inputs[j].connectedTo =
+            inputData[1].map(o => {
+              return mapContainer.nodes[parseInt(o.nodeKey, 10)].outputs[parseInt(o.connectorId, 10)];
+            });
+        });
+        Object.entries(data[1].outputs).forEach((outputData : [string, any]) => {// inputData[1] is Array<{nodeKey : string, connectorId : string}>
+          const j = parseInt(outputData[0], 10);
+          const mapContainer = app.mapContainer;
+          mapContainer.nodes[i].outputs[j].connectedTo =
+            outputData[1].map(o => {
+              return mapContainer.nodes[parseInt(o.nodeKey, 10)].inputs[parseInt(o.connectorId, 10)];
+            });
+        });
       });
     });
   });
-
   app.setState({});// redraw app
 }
