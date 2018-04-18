@@ -149,13 +149,13 @@ class Details extends Component<Props, State> {
   }
 
   readTextFile(file : string, then : Function) {
-    var rawFile = new XMLHttpRequest();
+    var rawFile = new XMLHttpRequest();// eslint-disable-line
     rawFile.open("GET", file, false);
     rawFile.onreadystatechange = function ()
     {
         if(rawFile.readyState === 4)
         {
-            if(rawFile.status === 200 || rawFile.status == 0)
+            if(rawFile.status === 200 || rawFile.status === 0)
             {
                 var allText = rawFile.responseText;
                 then(allText);
