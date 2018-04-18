@@ -5,11 +5,16 @@ import '../css/App.css';
 
 import { VarTypes, getVarType } from '../Types';
 import { TextInput, NumInput, BoolInput, SelectInput } from './Inputs';
+import App from '../App';
+import * as Examples from '../Examples';
+import { FileTranslator } from '../Translator';
 
 type T = {
   getObject : Function,
   setObject : Function,
   objectType : string,
+  name : string,
+  value : any,
 }
 
 type State = {
@@ -18,7 +23,11 @@ type State = {
   inspected : ?T,
 }
 
-class Details extends Component<null, State> {
+type Props = {
+  app : App
+}
+
+class Details extends Component<Props, State> {
 
   state = {
     name : "",
@@ -139,6 +148,38 @@ class Details extends Component<null, State> {
     )
   }
 
+  readTextFile(file : string, then : Function) {
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+                var allText = rawFile.responseText;
+                then(allText);
+            }
+        }
+    }
+    rawFile.send(null);
+}
+
+  renderExamples() {
+    return (
+      <div>
+        <span>Examples</span>
+        <ul>
+          {Object.entries(Examples).map((data : [string, any]) => (
+            <li key={data[0]}>{data[0]} <button onClick={
+              () => this.readTextFile(data[1], json => FileTranslator.FileToAppTranslator(this.props.app, JSON.parse(json)))
+            }>Open</button></li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
   renderInspected() {
     if(this.state.inspected)
     {
@@ -146,6 +187,8 @@ class Details extends Component<null, State> {
       switch (this.state.inspected.objectType.toLowerCase()) {
         case "variable":
           return this.renderVariable();
+        case "examples":
+          return this.renderExamples();
         default:
 
       }

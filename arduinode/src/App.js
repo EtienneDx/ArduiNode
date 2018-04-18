@@ -85,6 +85,11 @@ class App extends Component<null, State> {
             <ReactFileReader handleFiles={files => this.handleFiles(files)} fileTypes={'.arduinode'}>
               <button className='btn'>Load sketch</button>
             </ReactFileReader>
+            <button onClick={() => this.details.setInspected(
+              {
+                 objectType : "examples",
+                 getObject : () => ({name : "", value : ""}),
+              })}>Examples</button>
           </div>
         </header>
         <div className="App-container">
@@ -99,7 +104,7 @@ class App extends Component<null, State> {
               vars={this.state.vars}// arrays are references so no problem
               refresh={() => this.refresh()}
             />
-            <Details ref={e => this.details = e}/>
+            <Details ref={e => this.details = e} app={this}/>
           </div>
           <MapContainer ref={e => this.mapContainer = e}>
             {this.state.nodes.map((n, i) => {
