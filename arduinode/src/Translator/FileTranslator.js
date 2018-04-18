@@ -59,6 +59,7 @@ export function AppToFileTranslator (app : App, directDownload : boolean) {
 }
 
 export function FileToAppTranslator (app : App, obj : Object) {
+  console.log(obj)
   app.state.vars = [];
   Object.entries(obj.vars).forEach((data : [string, any]) => {
     const realV = {
@@ -102,7 +103,7 @@ export function FileToAppTranslator (app : App, obj : Object) {
             });
         });
       });
+      app.setState({});// that's when we're done
     });
   });
-  app.setState({});// redraw app
 }
