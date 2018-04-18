@@ -105,13 +105,13 @@ else {
         becomes: `(<<inputs:i>> <= <<inputs:j>>)`,
     },
     {
-        name: "Int ==",
+        name: "==",
         inputs: [{
-                type: "Int",
+                type: "any",
                 name: "i"
             },
             {
-                type: "Int",
+                type: "any",
                 name: "j"
             },
         ],
@@ -123,13 +123,13 @@ else {
         becomes: `(<<inputs:i>> == <<inputs:j>>)`,
     },
     {
-        name: "Int !=",
+        name: "!=",
         inputs: [{
-                type: "Int",
+                type: "any",
                 name: "i"
             },
             {
-                type: "Int",
+                type: "any",
                 name: "j"
             },
         ],

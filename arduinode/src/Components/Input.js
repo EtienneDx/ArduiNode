@@ -130,12 +130,30 @@ class Input extends React.Component<Props, State> {
   /***************This used as a dropzone events****************/
 
   handleDragOver(e : SyntheticDragEvent) {
-    if(this.props.getDraggedObject() instanceof Output && this.props.getDraggedObject().props.type === this.props.type)
+    if(
+      this.props.getDraggedObject() instanceof Output &&
+      (
+        this.props.getDraggedObject().props.type === this.props.type ||
+        (
+          this.props.type.name === "any" &&
+          this.props.getDraggedObject().props.type !== VarTypes.Basics.Exec
+        )
+      )
+    )
       e.preventDefault();
   }
 
   handleDrop(e : SyntheticDragEvent) {
-    if(this.props.getDraggedObject() instanceof Output && this.props.getDraggedObject().props.type === this.props.type)
+    if(
+      this.props.getDraggedObject() instanceof Output &&
+      (
+        this.props.getDraggedObject().props.type === this.props.type ||
+        (
+          this.props.type.name === "any" &&
+          this.props.getDraggedObject().props.type !== VarTypes.Basics.Exec
+        )
+      )
+    )
     {
       e.preventDefault();
       if(this.connectedTo.length > 0 && this.props.type !== VarTypes.Basics.Exec) {//non exec can only have one connection on inputs
@@ -168,7 +186,14 @@ class Input extends React.Component<Props, State> {
   checkConnections() {
     for (var i = 0; i < this.connectedTo.length; i++) {
       if (
-        this.connectedTo[i].props.type !== this.props.type ||
+        (
+          this.connectedTo[i].props.type !== this.props.type &&
+          this.props.type.name !== "any"
+        ) ||
+        (
+          this.connectedTo[i].props.type === VarTypes.Basics.Exec &&
+          this.props.type.name === "any"
+        ) ||
         this.connectedTo[i].props.parent.state.enabled === false ||
         this.props.parent.state.enabled === false
       ) {

@@ -158,7 +158,14 @@ class Output extends Component<Props, State> {
   checkConnections() {
     for (var i = 0; i < this.connectedTo.length; i++) {
       if (
-        this.connectedTo[i].props.type !== this.props.type ||
+        (
+          this.connectedTo[i].props.type !== this.props.type &&
+          this.connectedTo[i].props.type.name !== "any"
+        ) ||
+        (
+          this.props.type === VarTypes.Basics.Exec &&
+          this.connectedTo[i].props.type.name === "any"
+        ) ||
         this.connectedTo[i].props.parent.state.enabled === false ||
         this.props.parent.state.enabled === false
       ) {

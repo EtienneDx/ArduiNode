@@ -79,6 +79,7 @@ body, html, #root {
   width: 200px;
   margin: 5px;
   flex: .18;
+  overflow-x: scroll;
 }
 
 .Toolbar {
@@ -114,9 +115,9 @@ li {
   width: 70%;
   height: 70%;
   z-index: 15;
-  top: 50%;
+  top: 10%;
   left: 50%;
-  margin: -35% 0 0 -35%;
+  margin: 0 0 0 -35%;
   background: #bbb;
   border-radius: 15px;
   overflow-x: scroll;
