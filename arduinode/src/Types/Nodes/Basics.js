@@ -321,12 +321,54 @@ else {
                 name: "loop"
             },
             {
+              type: "Int",
+              name: "index",
+              becomes: `i`,
+            },
+            {
                 type: "Execution",
                 name: "then"
             },
         ],
         needsExecution: true,
         becomes: `for(int i = <<inputs:from>>; i < <<inputs:until>>; i++)
+{
+    <<outputs:loop>>
+}
+<<outputs:then>>`,
+        globalVars: [],
+    },
+    {
+        name: "Inverse For Loop",
+        inputs: [{
+                type: "Execution",
+                name: "exec"
+            },
+            {
+                type: "Int",
+                name: "from"
+            },
+            {
+                type: "Int",
+                name: "until"
+            },
+        ],
+        outputs: [{
+                type: "Execution",
+                name: "loop"
+            },
+            {
+              type: "Int",
+              name: "index",
+              becomes: `i`,
+            },
+            {
+                type: "Execution",
+                name: "then"
+            },
+        ],
+        needsExecution: true,
+        becomes: `for(int i = <<inputs:from>>; i > <<inputs:until>>; i--)
 {
     <<outputs:loop>>
 }
