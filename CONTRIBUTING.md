@@ -6,7 +6,7 @@ Before anything, please follow this simple code of conduct : be respectful and w
 ## Pull request process
 * Once your code is written, please ensure to have it commented properly, so that other users can easily understand the changes you made.
 * If your code changes anything referenced to in the readme, such as the interface or the user interactions, please change the readme as well.
-* <!> Test your code before pushing it <!> Check whether your code passes the tests (npm run test), and whether the application still runs properly. One way to do so is to create a blinking led program, and a program using your feature (in case you added some nodes and or variables types)
+* <!> Test your code before pushing it <!> Check whether your code passes the tests (npm run test), and whether the application still runs properly. One way to do so is to use any example sketch, and a sketch using your feature (in case you added some nodes and or variables types), and check wether it 'translates' properly.
 
 Once your code fulfil those criteria, create your pull request, and I'll review it as soon as possible.
 
