@@ -124,6 +124,7 @@ class MapContainer extends React.Component<Props, State> {
     };
     //var id = 0;
     const childrenWithProps = this.container !== undefined ? React.Children.map(this.props.children, child => {
+      if(child === null) return;// we have a few missing indexes when loading a sketch, we need to skip them
       return React.cloneElement(child, {
         zoomLevel: realZoom,
         ref: n => {

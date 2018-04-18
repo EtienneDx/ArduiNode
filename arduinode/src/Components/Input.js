@@ -70,11 +70,11 @@ class Input extends React.Component<Props, State> {
   }
 
   getPosX() {
-    return this.props.nodePosX + this.image.offsetLeft;
+    return this.props.nodePosX + (this.image ? this.image.offsetLeft : 0);
   }
 
   getPosY() {
-    return this.props.nodePosY + this.image.offsetTop + this.image.height / 2;
+    return this.props.nodePosY + (this.image ? (this.image.offsetTop + this.image.height / 2) : 0);
   }
 
   paint(context : CanvasRenderingContext2D) {

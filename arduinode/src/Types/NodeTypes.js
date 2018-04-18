@@ -21,3 +21,15 @@ export type NodeType = {
 }
 
 export default Nodes;
+
+export function getNodeType(type : string) {
+  var ret;
+  Object.values(Nodes).forEach(category => {// check into each category
+    Object.values(category).forEach(ntype => {// and into each type
+      // $FlowFixMe
+      if(ntype.name === type)// and return the first type that correspond to the name
+        ret = ntype;
+    });
+  });
+  return ret;
+}
