@@ -139,3 +139,19 @@ li {
 .react-file-reader {
   display: inline-block;
 }
+
+
+.infoPopup {
+  position: absolute;
+  text-align: left;
+  padding: 5px;
+  width: 70%;
+  height: 70%;
+  z-index: 15;
+  top: 10%;
+  left: 50%;
+  margin: 0 0 0 -35%;
+  background: #bbb;
+  border-radius: 15px;
+  overflow-x: scroll;
+}

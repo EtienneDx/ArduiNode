@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import ReactFileReader from 'react-file-reader';
 
-import { Toolbar, MapContainer, Node, Variables, Details, OutputBox } from './Components';
+import { Toolbar, MapContainer, Node, Variables, Details, OutputBox, InfoPopup } from './Components';
 import './css/App.css';
 
 import { NodeTypes } from './Types';
@@ -20,6 +20,7 @@ type State = {
   vars : Array<Variable>,// the list of vars in the sketch
   outputShown : boolean,
   output : string,
+  infoShown : boolean,
 }
 // hard coded starting positions for setup and loop
 const setupNode = Object.assign({}, NodeTypes.Arduino[0]);
@@ -43,6 +44,7 @@ class App extends Component<null, State> {
     vars : [],
     outputShown : false,
     output : "",
+    infoShown : false,
   }
 
   refresh() {
@@ -89,11 +91,20 @@ class App extends Component<null, State> {
               {
                  objectType : "examples",
                  getObject : () => ({name : "", value : ""}),
-              })}>Examples</button>
-          </div>
+              })}>
+              Examples
+            </button>
+            <div style={{display : "inline", right : 0, position : "absolute"}}>
+              <a href="" onClick={e => {
+                e.preventDefault();
+                this.setState({infoShown : true});
+              }}>More infos</a>
+            </div>
+        </div>
         </header>
         <div className="App-container">
           <OutputBox data={this.state.output} shown={this.state.outputShown} toggleShown={() => this.setState({ outputShown : false })}></OutputBox>
+          <InfoPopup shown={this.state.infoShown} toggleShown={() => this.setState({ infoShown : false })}></InfoPopup>
           <div className="left-toolbar">
             <Variables
               setDetails={obj => {
