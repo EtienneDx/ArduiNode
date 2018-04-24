@@ -34,7 +34,10 @@ class Variables extends Component<Props> {
     return (
       <div className="Variables">
         Variables&nbsp;&nbsp;&nbsp;&nbsp;
-        <button onClick={e => this.newVar(e)}>+</button>
+        <button onClick={e => {
+          e.stopPropagation();
+          this.newVar(e);
+        }}>+</button>
         <ul className="Variables-list" ref={e => this.list = e}>
           {this.props.vars.map((e, i) => {
             if(e.enabled === false) return null;

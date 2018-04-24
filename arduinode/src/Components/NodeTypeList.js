@@ -26,7 +26,10 @@ class Toolbar extends Component<Props> {
         <ul>
           {
             this.props.data.map(obj => (
-              <li key={i++} onClick={e => this.addNode(e, obj)}>
+              <li key={i++} onClick={e => {
+                e.stopPropagation();
+                this.addNode(e, obj);
+              }}>
                 {obj.name}
               </li>
             ))

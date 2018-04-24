@@ -25,7 +25,10 @@ class InfoPopup extends Component<Props> {
           <br/><br/>
           To suggest new features, you can add an issue with the label {'"enhancement"'} <a href="https://github.com/EtienneDx/ArduiNode/issues">here</a>.
         </p>
-        <button onClick={this.props.toggleShown}>Close</button>
+        <button onClick={e => {
+          e.stopPropagation();
+          this.props.toggleShown(e);
+        }}>Close</button>
       </div>
     );
   }

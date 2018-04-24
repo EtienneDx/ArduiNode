@@ -172,7 +172,10 @@ class Details extends Component<Props, State> {
         <ul>
           {Object.entries(Examples).map((data : [string, any]) => (
             <li key={data[0]}>{data[0]} <button onClick={
-              () => this.readTextFile(data[1], json => FileTranslator.FileToAppTranslator(this.props.app, JSON.parse(json)))
+              e => {
+                e.stopPropagation();
+                this.readTextFile(data[1], json => FileTranslator.FileToAppTranslator(this.props.app, JSON.parse(json)))
+              }
             }>Open</button></li>
           ))}
         </ul>

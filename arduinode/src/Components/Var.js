@@ -19,10 +19,22 @@ class Var extends Component<Props> {
     return (
       <li className="Var">
         {this.props.data.name}
-        <button onClick={this.props.remove}>X</button>
-        <button onClick={this.props.details}>Details</button>
-        <button onClick={this.props.getter}>Get</button>
-        <button onClick={this.props.setter}>Set</button>
+        <button onClick={e => {
+          e.stopPropagation();
+          this.props.remove();
+        }}>X</button>
+        <button onClick={e => {
+          e.stopPropagation();
+          this.props.details();
+        }}>Details</button>
+        <button onClick={e => {
+          e.stopPropagation();
+          this.props.getter();
+        }}>Get</button>
+        <button onClick={e => {
+          e.stopPropagation();
+          this.props.setter();
+        }}>Set</button>
       </li>
     );
   }

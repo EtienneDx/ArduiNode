@@ -97,7 +97,10 @@ class Toolbar extends Component<Props, State> {
                   this.getValidNodes().map(n => (
                     <li
                       key={i}
-                      onClick={() => this.props.addNode(n, null)}
+                      onClick={e => {
+                        e.stopPropagation();
+                        this.props.addNode(n, null);
+                      }}
                       style={this.state.actualId === i++ ? {textDecoration : "underline"} : {}}
                     >{/* $FlowFixMe */}
                       {n.name}

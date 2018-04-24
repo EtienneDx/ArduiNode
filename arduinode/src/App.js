@@ -93,33 +93,42 @@ class App extends Component<null, State> {
   render() {
     //var i = 0;// the key of the nodes
     return (
-      <div className="App">
+      <div className="App" onClick={() => {
+        this.details.setInspected(null);
+        this.toolbar.clearQuery();
+      }}>
         <header className="App-header">
           <h1 className="App-title">Welcome to ArduiNode</h1>
           <div style={{textAlign: "left"}}>
             <button onClick={e => {
+              e.stopPropagation();
               this.setState({ output : Translator(this), outputShown : true });
             }}>
               Generate code
             </button>
             <button onClick={e => {
+              e.stopPropagation();
               this.setState({ output : FileTranslator.AppToFileTranslator(this, true), outputShown : true });
             }}>
               Save sketch
             </button>
             <ReactFileReader handleFiles={files => this.handleFiles(files)} fileTypes={'.arduinode'}>
-              <button className='btn'>Load sketch</button>
+              <button className='btn' onClick={e => e.stopPropagation()}>Load sketch</button>
             </ReactFileReader>
-            <button onClick={() => this.details.setInspected(
+            <button onClick={e => {
+              e.stopPropagation();
+              this.details.setInspected(
               {
                  objectType : "examples",
                  getObject : () => ({name : "", value : ""}),
-              })}>
+              })
+            }}>
               Examples
             </button>
             <div style={{display : "inline", right : 0, position : "absolute"}}>
               <a href="" onClick={e => {
                 e.preventDefault();
+                e.stopPropagation();
                 this.setState({infoShown : true});
               }}>More infos</a>
             </div>

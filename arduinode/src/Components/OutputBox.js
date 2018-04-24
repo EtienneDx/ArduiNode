@@ -16,7 +16,10 @@ class OutputBox extends Component<Props> {
     if(this.props.shown === false) return null;
     return (
       <div className="OutputBox">
-        <button onClick={() => this.props.toggleShown()}>Close</button>
+        <button onClick={e => {
+          e.stopPropagation();
+          this.props.toggleShown();
+        }}>Close</button>
         <CopyToClipboard text={this.props.data}><button>Copy</button></CopyToClipboard>
         <pre id="code">{this.props.data}</pre>
       </div>
