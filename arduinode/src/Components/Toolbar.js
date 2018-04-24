@@ -85,6 +85,7 @@ class Toolbar extends Component<Props, State> {
           onKeyDown={e => this.onKeyDown(e.key)}
           ref={e => this.query = e}
           placeholder="Search &#128269;"
+          onClick={e => e.stopPropagation()}
         ></input>
         {
           this.state.query === "" && this.state.draggedFrom === null ?// @TODO would it be better to always filter and hide categories? / have checkbox option?

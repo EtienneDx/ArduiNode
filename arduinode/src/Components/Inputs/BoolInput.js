@@ -16,7 +16,7 @@ class BoolInput extends Component<Props> {
 
   render() {
     return (
-      <div>
+      <div onClick={e => e.stopPropagation()}>
         <label>{this.getDisplayString(this.props.name)}</label>
         <input
           type="checkbox"
