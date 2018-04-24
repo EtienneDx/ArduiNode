@@ -155,3 +155,7 @@ li {
   border-radius: 15px;
   overflow-x: scroll;
 }
+
+.Toolbar-List li:selected {
+  text-decoration: underline;
+}

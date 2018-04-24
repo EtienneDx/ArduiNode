@@ -9,6 +9,7 @@ type Props = {
   name : string,
   data : Array<NodeType>,
   addNode : Function,
+  query : string,
 }
 
 class Toolbar extends Component<Props> {
