@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import ReactFileReader from 'react-file-reader';
 
-import { Toolbar, MapContainer, Node, Variables, Details, OutputBox, InfoPopup } from './Components';
+import { Toolbar, MapContainer, Node, Variables, Details, OutputBox, InfoPopup, Input, Output } from './Components';
 import './css/App.css';
 
 import { NodeTypes } from './Types';
@@ -34,6 +34,7 @@ class App extends Component<null, State> {
 
   details : Details;// the details panel
   mapContainer : MapContainer;// the sketch panel
+  toolbar : Toolbar;// the toolbar panel
 
   state = {
     inspectedObject : null,
@@ -52,9 +53,31 @@ class App extends Component<null, State> {
     this.setState({});// force re render
   }
 
-  addNode(n : NodeType) {
-    this.state.nodes.push(n);// add the node
-    this.setState({});// force re render
+  addNode(n : NodeType, f : Input | Output) {
+    if(typeof f === "undefined" || f === null) {
+      this.state.nodes.push(n);// add the node
+      this.setState({});// force re render
+    } else {
+      n = Object.assign({}, n, {
+        initialPosX : f.mouseX,
+        initialPosY : f.mouseY,
+      });
+      this.state.nodes.push(n);// add the node
+      this.setState({}, () => {
+        let n = this.mapContainer.nodes[this.mapContainer.nodes.length - 1];
+        if(f instanceof Input) {
+          const connector = n.outputs.filter(o => o.props.type.name === f.props.type.name)[0];
+          connector.connectTo(f);
+          f.connectTo(connector);
+        }
+        else if(f instanceof Output) {
+          const connector = n.inputs.filter(i => i.props.type.name === f.props.type.name)[0];
+          connector.connectTo(f);
+          f.connectTo(connector);
+        }
+        this.setState({});
+      });
+    }
   }
 
   handleFiles(files : any) {
@@ -117,7 +140,7 @@ class App extends Component<null, State> {
             />
             <Details ref={e => this.details = e} app={this}/>
           </div>
-          <MapContainer ref={e => this.mapContainer = e}>
+          <MapContainer ref={e => this.mapContainer = e} openToolbar={(e, x, y) => this.toolbar.openFromDrag(e, x, y)} >
             {this.state.nodes.map((n, i) => {
               const x = typeof n.initialPosX === "number" ? n.initialPosX : null;
               const y = typeof n.initialPosY === "number" ? n.initialPosY : null;
@@ -133,7 +156,7 @@ class App extends Component<null, State> {
             )})}
           </MapContainer>
           <div className="right-toolbar">
-            <Toolbar addNode={n => this.addNode(n)}/>
+            <Toolbar addNode={(n, f) => this.addNode(n, f)} ref={e => this.toolbar = e} />
           </div>
         </div>
       </div>
