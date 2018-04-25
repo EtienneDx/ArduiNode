@@ -70,6 +70,8 @@ class Toolbar extends Component<Props, State> {
       const n = validNodes[this.state.actualId];
       this.props.addNode(n, this.state.draggedFrom);
       this.clearQuery();
+    } else if(key ==="Escape") {
+      this.clearQuery();
     }
   }
 
