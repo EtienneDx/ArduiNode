@@ -10,7 +10,7 @@ import '../css/App.css';
 
 type Props = {
   setDetails : Function,
-  getDetails : Function,
+  inspectedObject : Function,
   addNode : Function,
   vars : Array<Variable>,
   refresh : Function,
@@ -35,13 +35,7 @@ class Variables extends Component<Props> {
 
   setDetails(id) {
     this.props.setDetails({
-      setObject : obj => {
-        obj.changed = true;
-        // eslint-disable-next-line
-        this.props.vars[id] = obj;
-        this.props.refresh();// refresh
-      },//function to use to set changed data
-      getObject : () => this.props.vars[id],//get original object
+      object : this.props.vars[id],
       objectType : "Variable",//type of object
     })
   }
@@ -71,9 +65,9 @@ class Variables extends Component<Props> {
                     this.setDetails(i);
                   }}
                   inspected={
-                    typeof this.props.getDetails() === "object" &&
-                    this.props.getDetails() !== null &&
-                    this.props.getDetails().getObject() === this.props.vars[i]
+                    typeof this.props.inspectedObject === "object" &&
+                    this.props.inspectedObject !== null &&
+                    this.props.inspectedObject.object === this.props.vars[i]
                   }
                   getter={() => {
                     var get = Object.assign({}, NodeTypes.Vars[0]);// clone get nodes// @TODO clean this up

@@ -125,7 +125,7 @@ class App extends Component<null, State> {
               this.details.setInspected(
               {
                  objectType : "examples",
-                 getObject : () => ({name : "", value : ""}),
+                 object : {name : "", value : ""},
               })
             }}>
               Examples
@@ -148,7 +148,7 @@ class App extends Component<null, State> {
                 this.setState({inspectedObject : obj});
                 this.details.setInspected(obj);
               }}
-              getDetails={() => this.state.inspectedObject}
+              inspectedObject={this.state.inspectedObject}
               addNode={n => this.addNode(n)}
               vars={this.state.vars}// arrays are references so no problem
               refresh={(then) => this.refresh(then)}
