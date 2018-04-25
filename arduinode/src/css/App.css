@@ -159,3 +159,74 @@ li {
 .Toolbar-List li:selected {
   text-decoration: underline;
 }
+
+.input-label {
+  display: inline-block;
+  float: left;
+  clear: left;
+  width: 22%;
+  text-align: right;
+  margin-right: 3%;
+  margin-left: 10%;
+}
+
+.input-field {
+  display: inline-block;
+  float: left;
+}
+
+.input-field select {
+  vertical-align: top;
+}
+
+.input-field img {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  margin-right: 3px;/*Needed to avoid having the select over the image*/
+}
+
+.input-container {
+  width: 100%;
+  text-align: left;
+}
+
+.Var {
+  padding-bottom: 2px;
+  padding-top: 2px;
+}
+.Var[inspected="selected"] {
+  background-color : #bbb;
+}
+.Var:hover {
+  cursor: pointer;
+  background-color : #999;
+}
+
+.Variables-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.Var-label {
+  display: inline-block;
+  clear: left;
+  width: 30%;
+  text-align: left;
+  margin-left: 1%;
+  overflow-x: hidden;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.Var-label img {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  margin-right: 3px;/*Needed to avoid having the select over the image*/
+}
+
+.Var-buttons {
+  display: inline-block;
+}

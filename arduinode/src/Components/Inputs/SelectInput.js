@@ -17,11 +17,12 @@ class SelectInput extends Component<Props> {
 
   render() {
     return (
-      <div onClick={e => e.stopPropagation()}>
-        <label>{this.getDisplayString(this.props.name)}</label>
+      <div onClick={e => e.stopPropagation()} className="input-container">
+        <label className="input-label">{this.getDisplayString(this.props.name)}</label>
         <select
           value={this.props.value}
           onChange={e => this.props.onChange(e.target.value)}
+          className="input-field"
         >
           {
             this.props.options.map((o, i) => (

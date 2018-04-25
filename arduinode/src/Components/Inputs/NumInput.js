@@ -16,12 +16,13 @@ class NumInput extends Component<Props> {
 
   render() {
     return (
-      <div onClick={e => e.stopPropagation()}>
-        <label>{this.getDisplayString(this.props.name)}</label>
+      <div onClick={e => e.stopPropagation()} className="input-container">
+        <label className="input-label">{this.getDisplayString(this.props.name)}</label>
         <input
           type="number"
           value={this.props.value}
           onChange={e => this.props.onChange(e.target.value)}
+          className="input-field"
         >
         </input>
       </div>

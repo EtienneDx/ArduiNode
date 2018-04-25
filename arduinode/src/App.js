@@ -48,9 +48,13 @@ class App extends Component<null, State> {
     infoShown : false,
   }
 
-  refresh() {
+  refresh(then : Function) {
     this.mapContainer.checkConnections();// check if a node or a var have been disabled and require re-wiring
-    this.setState({});// force re render
+    if(typeof then === "function") {
+      this.setState({}, () => then());// force re render
+    } else {
+      this.setState({});// force re render
+    }
   }
 
   addNode(n : NodeType, f : Input | Output) {
@@ -96,6 +100,7 @@ class App extends Component<null, State> {
       <div className="App" onClick={() => {
         this.details.setInspected(null);
         this.toolbar.clearQuery();
+        this.setState({inspectedObject : null});// redraw
       }}>
         <header className="App-header">
           <h1 className="App-title">Welcome to ArduiNode</h1>
@@ -143,9 +148,10 @@ class App extends Component<null, State> {
                 this.setState({inspectedObject : obj});
                 this.details.setInspected(obj);
               }}
+              getDetails={() => this.state.inspectedObject}
               addNode={n => this.addNode(n)}
               vars={this.state.vars}// arrays are references so no problem
-              refresh={() => this.refresh()}
+              refresh={(then) => this.refresh(then)}
             />
             <Details ref={e => this.details = e} app={this}/>
           </div>

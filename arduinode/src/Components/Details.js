@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import '../css/App.css';
 
 import { VarTypes, getVarType } from '../Types';
-import { TextInput, NumInput, BoolInput, SelectInput } from './Inputs';
+import { TextInput, NumInput, BoolInput, SelectInput, TypeSelect } from './Inputs';
 import App from '../App';
 import * as Examples from '../Examples';
 import { FileTranslator } from '../Translator';
@@ -110,7 +110,7 @@ class Details extends Component<Props, State> {
       Object.values(category).filter(type => type !== VarTypes.Basics.Exec).forEach(type => typeOptions.push(type.name)));
     return (
       <form>
-        <SelectInput
+        <TypeSelect
           name="Type : "
           value={// $FlowFixMe
             this.state.inspected.getObject().type.name
