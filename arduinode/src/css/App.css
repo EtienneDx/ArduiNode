@@ -159,6 +159,10 @@ li {
 .Toolbar-List li:selected {
   text-decoration: underline;
 }
+.Toolbar-List li:hover {
+  background-color: #666;
+  cursor: pointer;
+}
 
 .input-label {
   display: inline-block;

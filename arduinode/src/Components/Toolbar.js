@@ -102,7 +102,8 @@ class Toolbar extends Component<Props, State> {
                       key={i}
                       onClick={e => {
                         e.stopPropagation();
-                        this.props.addNode(n, null);
+                        this.props.addNode(n, this.state.draggedFrom);
+                        this.clearQuery();
                       }}
                       style={this.state.actualId === i++ ? {textDecoration : "underline"} : {}}
                     >{/* $FlowFixMe */}

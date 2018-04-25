@@ -23,7 +23,7 @@ class Toolbar extends Component<Props> {
     return (
       <div>
         {this.props.name}<br/>
-        <ul>
+        <ul className="Toolbar-List">
           {
             this.props.data.map(obj => (
               <li key={i++} onClick={e => {
