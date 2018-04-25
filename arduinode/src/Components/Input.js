@@ -156,6 +156,7 @@ class Input extends React.Component<Props, State> {
     )
     {
       e.preventDefault();
+      e.stopPropagation();
       if(this.connectedTo.length > 0 && this.props.type !== VarTypes.Basics.Exec) {//non exec can only have one connection on inputs
         this.connectedTo.forEach(e => e.disconnect());
         this.connectedTo = [];

@@ -97,7 +97,7 @@ class Node extends React.Component<Props, State> {
   }
 
   check() {
-    if(this.props.type.name === "Get" && this.props.getVar(this.props.type.target).enabled === false) {
+    if((this.props.type.name === "Get" || this.props.type.name === "Set") && this.props.getVar(this.props.type.target).enabled === false) {
       this.setState({ enabled : false });
     }
     this.inputs.forEach(i => i.checkConnections());

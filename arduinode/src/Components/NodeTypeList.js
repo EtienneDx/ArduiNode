@@ -9,6 +9,7 @@ type Props = {
   name : string,
   data : Array<NodeType>,
   addNode : Function,
+  query : string,
 }
 
 class Toolbar extends Component<Props> {
@@ -22,10 +23,13 @@ class Toolbar extends Component<Props> {
     return (
       <div>
         {this.props.name}<br/>
-        <ul>
+        <ul className="Toolbar-List">
           {
             this.props.data.map(obj => (
-              <li key={i++} onClick={e => this.addNode(e, obj)}>
+              <li key={i++} onClick={e => {
+                e.stopPropagation();
+                this.addNode(e, obj);
+              }}>
                 {obj.name}
               </li>
             ))

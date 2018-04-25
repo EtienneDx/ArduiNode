@@ -92,6 +92,7 @@ class Output extends Component<Props, State> {
     if(this.props.getDraggedObject() instanceof Input && this.props.getDraggedObject().props.type === this.props.type)
     {
       e.preventDefault();
+      e.stopPropagation();
       if(this.props.type === VarTypes.Basics.Exec) {//exec outputs can have only one connection
         this.connectedTo.forEach(e => e.disconnect(this));
         this.connectedTo = [];

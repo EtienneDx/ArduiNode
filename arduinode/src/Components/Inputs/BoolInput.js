@@ -16,12 +16,13 @@ class BoolInput extends Component<Props> {
 
   render() {
     return (
-      <div>
-        <label>{this.getDisplayString(this.props.name)}</label>
+      <div onClick={e => e.stopPropagation()} className="input-container">
+        <label className="input-label">{this.getDisplayString(this.props.name)}</label>
         <input
           type="checkbox"
           checked={this.props.value}
           onChange={e => this.props.onChange(e.target.checked)}
+          className="input-field"
         >
         </input>
       </div>

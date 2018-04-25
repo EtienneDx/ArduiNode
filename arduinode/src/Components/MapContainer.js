@@ -23,6 +23,7 @@ type State = {
 
 type Props = {
   children?: React.Node,
+  openToolbar : Function,
 }
 
 class MapContainer extends React.Component<Props, State> {
@@ -42,6 +43,8 @@ class MapContainer extends React.Component<Props, State> {
   nodes : Array<Node> = [];
   needRepaint : boolean = true;
   actuallyDraggedObject : Input | Output;
+
+  /***********Drag Events***************/
 
   handleDragStart(e : SyntheticDragEvent<HTMLDivElement>) {
     this.setState({
@@ -63,6 +66,8 @@ class MapContainer extends React.Component<Props, State> {
     });
   }
 
+  /***********Scroll Event*************/
+
   handleScroll(e : SyntheticWheelEvent<HTMLDivElement>) {
     const dY = e.deltaY;
     if (dY === 0) return;
@@ -70,6 +75,21 @@ class MapContainer extends React.Component<Props, State> {
       zoomLevel: Math.max(minZoomLevel, Math.min(maxZoomLevel, actualState.zoomLevel + (dY > 0 ? 1 : -1))),
     }));
   }
+
+  /***************Drop zone event****************/
+
+  handleDragOver(e : SyntheticDragEvent) {
+    if(this.actuallyDraggedObject instanceof Input || this.actuallyDraggedObject instanceof Output)
+      e.preventDefault();
+  }
+
+  handleDrop(e : SyntheticDragEvent) {
+    if(this.actuallyDraggedObject instanceof Input || this.actuallyDraggedObject instanceof Output) {
+      this.props.openToolbar(this.actuallyDraggedObject);
+    }
+  }
+
+  /***************React Js life cycle******************/
 
   componentDidMount() {
     var context = this.canvas.getContext('2d');
@@ -146,7 +166,12 @@ class MapContainer extends React.Component<Props, State> {
     return (
       <div className="MapContainer">
         MapContainer
-        <div className="MapContainer-frame" ref={(frame) => this.frame = frame}>
+        <div
+          className="MapContainer-frame"
+          ref={(frame) => this.frame = frame}
+          onDragOver={e => this.handleDragOver(e)}
+          onDrop={e => this.handleDrop(e)}
+        >
           <div
             className="MapContainer-container"
             draggable="true"

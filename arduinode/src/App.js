@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import ReactFileReader from 'react-file-reader';
 
-import { Toolbar, MapContainer, Node, Variables, Details, OutputBox } from './Components';
+import { Toolbar, MapContainer, Node, Variables, Details, OutputBox, InfoPopup, Input, Output } from './Components';
 import './css/App.css';
 
 import { NodeTypes } from './Types';
@@ -20,6 +20,7 @@ type State = {
   vars : Array<Variable>,// the list of vars in the sketch
   outputShown : boolean,
   output : string,
+  infoShown : boolean,
 }
 // hard coded starting positions for setup and loop
 const setupNode = Object.assign({}, NodeTypes.Arduino[0]);
@@ -33,6 +34,7 @@ class App extends Component<null, State> {
 
   details : Details;// the details panel
   mapContainer : MapContainer;// the sketch panel
+  toolbar : Toolbar;// the toolbar panel
 
   state = {
     inspectedObject : null,
@@ -43,16 +45,43 @@ class App extends Component<null, State> {
     vars : [],
     outputShown : false,
     output : "",
+    infoShown : false,
   }
 
-  refresh() {
+  refresh(then : Function) {
     this.mapContainer.checkConnections();// check if a node or a var have been disabled and require re-wiring
-    this.setState({});// force re render
+    if(typeof then === "function") {
+      this.setState({}, () => then());// force re render
+    } else {
+      this.setState({});// force re render
+    }
   }
 
-  addNode(n : NodeType) {
-    this.state.nodes.push(n);// add the node
-    this.setState({});// force re render
+  addNode(n : NodeType, f : Input | Output) {
+    if(typeof f === "undefined" || f === null) {
+      this.state.nodes.push(n);// add the node
+      this.setState({});// force re render
+    } else {
+      n = Object.assign({}, n, {
+        initialPosX : f.mouseX,
+        initialPosY : f.mouseY,
+      });
+      this.state.nodes.push(n);// add the node
+      this.setState({}, () => {
+        let n = this.mapContainer.nodes[this.mapContainer.nodes.length - 1];
+        if(f instanceof Input) {
+          const connector = n.outputs.filter(o => o.props.type.name === f.props.type.name)[0];
+          connector.connectTo(f);
+          f.connectTo(connector);
+        }
+        else if(f instanceof Output) {
+          const connector = n.inputs.filter(i => i.props.type.name === f.props.type.name)[0];
+          connector.connectTo(f);
+          f.connectTo(connector);
+        }
+        this.setState({});
+      });
+    }
   }
 
   handleFiles(files : any) {
@@ -68,45 +97,65 @@ class App extends Component<null, State> {
   render() {
     //var i = 0;// the key of the nodes
     return (
-      <div className="App">
+      <div className="App" onClick={() => {
+        this.details.setInspected(null);
+        this.toolbar.clearQuery();
+        this.setState({inspectedObject : null});// redraw
+      }}>
         <header className="App-header">
           <h1 className="App-title">Welcome to ArduiNode</h1>
           <div style={{textAlign: "left"}}>
             <button onClick={e => {
+              e.stopPropagation();
               this.setState({ output : Translator(this), outputShown : true });
             }}>
               Generate code
             </button>
             <button onClick={e => {
+              e.stopPropagation();
               this.setState({ output : FileTranslator.AppToFileTranslator(this, true), outputShown : true });
             }}>
               Save sketch
             </button>
             <ReactFileReader handleFiles={files => this.handleFiles(files)} fileTypes={'.arduinode'}>
-              <button className='btn'>Load sketch</button>
+              <button className='btn' onClick={e => e.stopPropagation()}>Load sketch</button>
             </ReactFileReader>
-            <button onClick={() => this.details.setInspected(
+            <button onClick={e => {
+              e.stopPropagation();
+              this.details.setInspected(
               {
                  objectType : "examples",
                  getObject : () => ({name : "", value : ""}),
-              })}>Examples</button>
-          </div>
+              })
+            }}>
+              Examples
+            </button>
+            <div style={{display : "inline", right : 0, position : "absolute"}}>
+              <a href="" onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.setState({infoShown : true});
+              }}>More infos</a>
+            </div>
+        </div>
         </header>
         <div className="App-container">
           <OutputBox data={this.state.output} shown={this.state.outputShown} toggleShown={() => this.setState({ outputShown : false })}></OutputBox>
+          <InfoPopup shown={this.state.infoShown} toggleShown={() => this.setState({ infoShown : false })}></InfoPopup>
           <div className="left-toolbar">
             <Variables
               setDetails={obj => {
                 this.setState({inspectedObject : obj});
                 this.details.setInspected(obj);
               }}
+              getDetails={() => this.state.inspectedObject}
               addNode={n => this.addNode(n)}
               vars={this.state.vars}// arrays are references so no problem
-              refresh={() => this.refresh()}
+              refresh={(then) => this.refresh(then)}
             />
             <Details ref={e => this.details = e} app={this}/>
           </div>
-          <MapContainer ref={e => this.mapContainer = e}>
+          <MapContainer ref={e => this.mapContainer = e} openToolbar={(e, x, y) => this.toolbar.openFromDrag(e, x, y)} >
             {this.state.nodes.map((n, i) => {
               const x = typeof n.initialPosX === "number" ? n.initialPosX : null;
               const y = typeof n.initialPosY === "number" ? n.initialPosY : null;
@@ -122,7 +171,7 @@ class App extends Component<null, State> {
             )})}
           </MapContainer>
           <div className="right-toolbar">
-            <Toolbar addNode={n => this.addNode(n)}/>
+            <Toolbar addNode={(n, f) => this.addNode(n, f)} ref={e => this.toolbar = e} />
           </div>
         </div>
       </div>

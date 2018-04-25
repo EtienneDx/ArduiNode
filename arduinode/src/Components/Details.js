@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import '../css/App.css';
 
 import { VarTypes, getVarType } from '../Types';
-import { TextInput, NumInput, BoolInput, SelectInput } from './Inputs';
+import { TextInput, NumInput, BoolInput, SelectInput, TypeSelect } from './Inputs';
 import App from '../App';
 import * as Examples from '../Examples';
 import { FileTranslator } from '../Translator';
@@ -110,7 +110,7 @@ class Details extends Component<Props, State> {
       Object.values(category).filter(type => type !== VarTypes.Basics.Exec).forEach(type => typeOptions.push(type.name)));
     return (
       <form>
-        <SelectInput
+        <TypeSelect
           name="Type : "
           value={// $FlowFixMe
             this.state.inspected.getObject().type.name
@@ -172,7 +172,10 @@ class Details extends Component<Props, State> {
         <ul>
           {Object.entries(Examples).map((data : [string, any]) => (
             <li key={data[0]}>{data[0]} <button onClick={
-              () => this.readTextFile(data[1], json => FileTranslator.FileToAppTranslator(this.props.app, JSON.parse(json)))
+              e => {
+                e.stopPropagation();
+                this.readTextFile(data[1], json => FileTranslator.FileToAppTranslator(this.props.app, JSON.parse(json)))
+              }
             }>Open</button></li>
           ))}
         </ul>
