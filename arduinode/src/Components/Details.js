@@ -185,6 +185,7 @@ class Details extends Component<Props, State> {
           }
         </span>
         <div className="fields">
+          <span>Default input values : </span>
           {
             // $FlowFixMe
             this.state.inspected.object.inputs.map(input => {
@@ -194,16 +195,19 @@ class Details extends Component<Props, State> {
                 this.props.app.setState({});
               }
 
-              // $FlowFixMe
-              var v = this.state.inspected.object.defaultValue[input.name];
+              var v;
               // $FlowFixMe
               switch (input.type) {
                 case "Int":
+                  // $FlowFixMe
+                  v = this.state.inspected.object.defaultValue[input.name]
                   v = v ? v : 0;
-                  return (<NumInput name={input.name} value={v} onChange={onChange} key={i++}/>);
+                  return (<NumInput name={input.name} value={v} onChange={onChange} key={i++} />);
                 case "Boolean":
+                  // $FlowFixMe
+                  v = this.state.inspected.object.defaultValue[input.name]
                   v = v ? v : false;
-                  return (<BoolInput name={input.name} value={v} onChange={onChange} key={i++}/>);
+                  return (<BoolInput name={input.name} value={v} onChange={onChange} key={i++} />);
                 default:
                   return null;
               }

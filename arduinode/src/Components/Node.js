@@ -181,7 +181,7 @@ class Node extends React.Component<Props, State> {
                       this.inputs[connector.props.connectorId] = connector;
                   }}
                   parent={this}
-                  defaultValue={this.state.defaultValue[input.name]}
+                  defaultValue={this.state.defaultValue ? (input.type !== "Execution" ? this.state.defaultValue[input.name] : null ) : {}}
                 />
               ))}
           </div>

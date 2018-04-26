@@ -204,12 +204,13 @@ function findInputValue(app : App, nId : number, inId : number) : string {
     const outId = input.connectedTo[0].props.connectorId;// the id of the output relative to the node parent
     if(outParent.props.type.needsExecution === false)// if the node only returns a value, we process the node
       return processNode(app, outParent.props.type, outParent.props.nodeKey);
-    else {// if the node uses execution, we use the output becomes and replace global vars
+    else {// if the node uses execution, we use the output becomes and replace global vars (rare case for now)
       var bec = outParent.props.type.outputs[outId].becomes;
       return replaceGlobalVars(bec, outParent);
     }
+  } else {// there's no connection
+    return app.mapContainer.nodes[nId].state.defaultValue[input.props.name];// we use the default value
   }
-  return "null";// if the node isn't connected
 }
 
 function findOutputValue(app : App, nId : number, outId : number) : string {
