@@ -219,17 +219,20 @@ void loop() {
 	inputs : [
 		{
 			type : "Int",
-			name : "i"
+			name : "A"
 		},
 	],
 	outputs : [
 		{
 			type : "Int",
-			name : "i"
+			name : "|A|"
 		},
 	],
 	needsExecution : false,
-	becomes : `abs(<<inputs:i>>)`,
+	becomes : `abs(<<inputs:A>>)`,
+  defaultValue : {
+    "A" : 0,
+  }
 },
 {
 	name : "Int Max",
@@ -317,13 +320,53 @@ void loop() {
 	outputs : [
 		{
 			type : "Int",
-			name : "sqrt"
+			name : "sqrt A"
 		},
 	],
 	needsExecution : false,
-	becomes : `sqrt(<<inputs:A>)`,
+	becomes : `sqrt(<<inputs:A>>)`,
   defaultValue : {
     "A" : 0,
+  }
+},
+{
+	name : "Int map",
+	inputs : [
+		{
+			type : "Int",
+			name : "A"
+		},
+		{
+			type : "Int",
+			name : "From Low"
+		},
+		{
+			type : "Int",
+			name : "From High"
+		},
+		{
+			type : "Int",
+			name : "To Low"
+		},
+		{
+			type : "Int",
+			name : "To High"
+		},
+	],
+	outputs : [
+		{
+			type : "Int",
+			name : "mapped A"
+		},
+	],
+	needsExecution : false,
+	becomes : `map(<<inputs:A>>, <<inputs:From Low>>, <<inputs:From High>>, <<inputs:To Low>>, <<inputs:To High>>)`,
+  defaultValue : {
+    "A" : 0,
+    "From Low" : 0,
+    "From High" : 1024,
+    "To Low" : 0,
+    "To High" : 256,
   }
 },
 ]

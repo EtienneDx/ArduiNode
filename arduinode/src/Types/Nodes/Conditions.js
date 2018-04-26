@@ -31,6 +31,9 @@ else {
 }
 <</outputs:false?>>
 `,
+defaultValue : {
+  condition : true,
+}
     },
     {
         name: "Int >",

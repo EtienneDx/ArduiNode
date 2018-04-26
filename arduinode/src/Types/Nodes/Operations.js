@@ -11,7 +11,9 @@ export default [
         }, ],
         needsExecution: false,
         becomes: `!<<inputs:>>`,
-        globalVars: []
+        defaultValue : {
+          "" : true,
+        }
     },
     {
         name: "AND",
@@ -30,7 +32,10 @@ export default [
         }, ],
         needsExecution: false,
         becomes: `(<<inputs:A>> && <<inputs:B>>)`,
-        globalVars: [],
+        defaultValue : {
+          A : true,
+          B : true,
+        }
     },
     {
         name: "OR",
@@ -49,7 +54,10 @@ export default [
         }, ],
         needsExecution: false,
         becomes: `(<<inputs:A>> ¦¦ <<inputs:B>>)`,
-        globalVars: [],
+        defaultValue : {
+          A : true,
+          B : true,
+        }
     },
     {
         name: "Int x Int",
@@ -68,7 +76,10 @@ export default [
         }, ],
         needsExecution: false,
         becomes: `(<<inputs:A>> * <<inputs:B>>)`,
-        globalVars: []
+        defaultValue : {
+          A : 0,
+          B : 0,
+        }
     },
     {
         name: "Int + Int",
@@ -87,7 +98,10 @@ export default [
         }, ],
         needsExecution: false,
         becomes: `(<<inputs:A>> + <<inputs:B>>)`,
-        globalVars: []
+        defaultValue : {
+          A : 0,
+          B : 0,
+        }
     },
     {
         name: "Int / Int",
@@ -106,7 +120,10 @@ export default [
         }, ],
         needsExecution: false,
         becomes: `(<<inputs:A>> / <<inputs:B>>)`,
-        globalVars: []
+        defaultValue : {
+          A : 0,
+          B : 0,
+        }
     },
     {
         name: "Int - Int",
@@ -125,7 +142,10 @@ export default [
         }, ],
         needsExecution: false,
         becomes: `(<<inputs:A>> - <<inputs:B>>)`,
-        globalVars: []
+        defaultValue : {
+          A : 0,
+          B : 0,
+        }
     },
     {
         name: "Int % Int",
@@ -144,6 +164,9 @@ export default [
         }, ],
         needsExecution: false,
         becomes: `(<<inputs:A>> % <<inputs:B>>)`,
-        globalVars: []
+        defaultValue : {
+          A : 0,
+          B : 0,
+        }
     },
 ]

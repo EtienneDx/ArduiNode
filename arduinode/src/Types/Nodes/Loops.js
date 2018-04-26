@@ -105,7 +105,9 @@ defaultValue : {
     <<outputs:loop>>
 }
 <<outputs:then>>`,
-        globalVars: [],
+defaultValue : {
+  condition : true,
+}
     },
     {
         name: "Do While Loop",
@@ -133,7 +135,9 @@ defaultValue : {
     <<outputs:loop>>
 } while(<<inputs:condition>>);
 <<outputs:then>>`,
-        globalVars: [],
+defaultValue : {
+  condition : true,
+}
     },
     {
         name: "Break Loop",

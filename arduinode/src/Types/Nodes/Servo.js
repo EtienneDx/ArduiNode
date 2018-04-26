@@ -25,6 +25,8 @@ export default [
 	needsExecution : true,
 	becomes : `<<inputs:servo>>.write(<<inputs:rotation>>);
 <<outputs:exec>>`,
-	globalVars : [],
+defaultValue : {
+	rotation : 0,
+}
 },
 ];
