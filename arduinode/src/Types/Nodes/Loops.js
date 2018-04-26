@@ -34,7 +34,10 @@ export default [
     <<outputs:loop>>
 }
 <<outputs:then>>`,
-        globalVars: [],
+defaultValue : {
+  "from" : 0,
+  "until" : 10,
+}
     },
     {
         name: "Inverse For Loop",
@@ -71,7 +74,10 @@ export default [
     <<outputs:loop>>
 }
 <<outputs:then>>`,
-        globalVars: [],
+defaultValue : {
+  "from" : 10,
+  "until" : 0,
+}
     },
     {
         name: "While Loop",

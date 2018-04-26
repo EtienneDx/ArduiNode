@@ -17,133 +17,133 @@ export default [
         name: "AND",
         inputs: [{
                 type: "Boolean",
-                name: ""
+                name: "A"
             },
             {
                 type: "Boolean",
-                name: "_"
+                name: "B"
             },
         ],
         outputs: [{
             type: "Boolean",
-            name: ""
+            name: "A and B"
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:>> && <<inputs:_>>)`,
+        becomes: `(<<inputs:A>> && <<inputs:B>>)`,
         globalVars: [],
     },
     {
         name: "OR",
         inputs: [{
                 type: "Boolean",
-                name: ""
+                name: "A"
             },
             {
                 type: "Boolean",
-                name: "_"
+                name: "B"
             },
         ],
         outputs: [{
             type: "Boolean",
-            name: ""
+            name: "A or B"
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:>> ¦¦ <<inputs:_>>)`,
+        becomes: `(<<inputs:A>> ¦¦ <<inputs:B>>)`,
         globalVars: [],
     },
     {
         name: "Int x Int",
         inputs: [{
                 type: "Int",
-                name: "i"
+                name: "A"
             },
             {
                 type: "Int",
-                name: "j"
+                name: "B"
             },
         ],
         outputs: [{
             type: "Int",
-            name: "i"
+            name: "A x B"
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:i>> * <<inputs:j>>)`,
+        becomes: `(<<inputs:A>> * <<inputs:B>>)`,
         globalVars: []
     },
     {
         name: "Int + Int",
         inputs: [{
                 type: "Int",
-                name: "i"
+                name: "A"
             },
             {
                 type: "Int",
-                name: "j"
+                name: "B"
             },
         ],
         outputs: [{
             type: "Int",
-            name: "i"
+            name: "A + B"
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:i>> + <<inputs:j>>)`,
+        becomes: `(<<inputs:A>> + <<inputs:B>>)`,
         globalVars: []
     },
     {
         name: "Int / Int",
         inputs: [{
                 type: "Int",
-                name: "i"
+                name: "A"
             },
             {
                 type: "Int",
-                name: "j"
+                name: "B"
             },
         ],
         outputs: [{
             type: "Int",
-            name: "i"
+            name: "A / B"
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:i>> / <<inputs:j>>)`,
+        becomes: `(<<inputs:A>> / <<inputs:B>>)`,
         globalVars: []
     },
     {
         name: "Int - Int",
         inputs: [{
                 type: "Int",
-                name: "i"
+                name: "A"
             },
             {
                 type: "Int",
-                name: "j"
+                name: "B"
             },
         ],
         outputs: [{
             type: "Int",
-            name: "i"
+            name: "A - B"
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:i>> - <<inputs:j>>)`,
+        becomes: `(<<inputs:A>> - <<inputs:B>>)`,
         globalVars: []
     },
     {
         name: "Int % Int",
         inputs: [{
                 type: "Int",
-                name: "i"
+                name: "A"
             },
             {
                 type: "Int",
-                name: "j"
+                name: "B"
             },
         ],
         outputs: [{
             type: "Int",
-            name: "i"
+            name: "A % B"
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:i>> % <<inputs:j>>)`,
+        becomes: `(<<inputs:A>> % <<inputs:B>>)`,
         globalVars: []
     },
 ]

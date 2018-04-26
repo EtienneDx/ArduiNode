@@ -14,6 +14,13 @@ type T = {
     type : Object,
     value : any,
     name : string,
+  } | {
+    name : string,
+    defaultValue : any,
+    inputs : Array<{
+      type : string,
+      name : string,
+    }>,
   },
   objectType : string
 } | null
@@ -46,27 +53,28 @@ class Details extends Component<Props, State> {
 
   typeChanged() {
     if(this.state.inspected !== null) {
-      // eslint-disable-next-line
-      this.state.inspected.object.value = this.state.inspected.object.type.defaultValue;
+      // $FlowFixMe
+      this.state.inspected.object.value = this.state.inspected.object.type.defaultValue;// eslint-disable-line
       this.props.app.setState({ });
     }
   }
 
   getObjectInputs(obj : any, valueId : any) {
     const onChange = v => {
-      if(this.state.inspected !== null) {
+      if(this.state.inspected !== null) {// $FlowFixMe
         var value = this.state.inspected.object.value;
         if(valueId === null) {
           value = v;
         } else {
           value[valueId] = v;
         }
-        // eslint-disable-next-line
-        this.state.inspected.object.value = value;//unnecessary if object but supposidely can't harm
+        //unnecessary if object but supposidely can't harm
+        // $FlowFixMe
+        this.state.inspected.object.value = value;// eslint-disable-line
         this.setState({});
       }
     };
-    if(this.state.inspected !== null) {
+    if(this.state.inspected !== null) {// $FlowFixMe
       const realVal = valueId === null ? this.state.inspected.object.value : this.state.inspected.object.value[valueId];
       const name = valueId === null ? "Value : " : valueId + " : ";
       if(typeof obj === "string" && obj === "string") {
@@ -91,6 +99,7 @@ class Details extends Component<Props, State> {
 
   renderVariable() {//getObject is a variable
     if(this.state.inspected !== null) {
+      // $FlowFixMe
       const valueFormat = this.state.inspected.object.type.valueFormat;
       const formComplement = this.getObjectInputs(valueFormat, null);
 
@@ -107,8 +116,8 @@ class Details extends Component<Props, State> {
             onChange={(v) => {
               const type = getVarType(v);
               if(this.state.inspected !== null) {
-                // eslint-disable-next-line
-                this.state.inspected.object.type = type;
+                // $FlowFixMe
+                this.state.inspected.object.type = type;// eslint-disable-line
                 this.typeChanged();
               }
             }}
@@ -166,6 +175,45 @@ class Details extends Component<Props, State> {
     );
   }
 
+  renderNodeDefVal() {
+    var i = 0;
+    return (
+      <div className="Details-Node-Default-Value">
+        <span className="name">
+          {// $FlowFixMe
+            this.state.inspected.object.name
+          }
+        </span>
+        <div className="fields">
+          {
+            // $FlowFixMe
+            this.state.inspected.object.inputs.map(input => {
+              const onChange = v => {
+                // $FlowFixMe
+                this.state.inspected.object.defaultValue[input.name] = v;// eslint-disable-line
+                this.props.app.setState({});
+              }
+
+              // $FlowFixMe
+              var v = this.state.inspected.object.defaultValue[input.name];
+              // $FlowFixMe
+              switch (input.type) {
+                case "Int":
+                  v = v ? v : 0;
+                  return (<NumInput name={input.name} value={v} onChange={onChange} key={i++}/>);
+                case "Boolean":
+                  v = v ? v : false;
+                  return (<BoolInput name={input.name} value={v} onChange={onChange} key={i++}/>);
+                default:
+                  return null;
+              }
+            })
+          }
+        </div>
+      </div>
+    )
+  }
+
   renderInspected() {
     if(this.state.inspected)
     {
@@ -175,6 +223,8 @@ class Details extends Component<Props, State> {
           return this.renderVariable();
         case "examples":
           return this.renderExamples();
+        case "node-default-value":
+          return this.renderNodeDefVal();
         default:
           return null;
       }
