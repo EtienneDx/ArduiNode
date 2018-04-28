@@ -31,16 +31,19 @@ else {
 }
 <</outputs:false?>>
 `,
+defaultValue : {
+  condition : true,
+}
     },
     {
         name: "Int >",
         inputs: [{
                 type: "Int",
-                name: "i"
+                name: "A"
             },
             {
                 type: "Int",
-                name: "j"
+                name: "B"
             },
         ],
         outputs: [{
@@ -48,17 +51,21 @@ else {
             name: ""
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:i>> > <<inputs:j>>)`,
+        becomes: `(<<inputs:A>> > <<inputs:B>>)`,
+        defaultValue : {
+          "A" : 0,
+          "B" : 0,
+        }
     },
     {
         name: "Int >=",
         inputs: [{
                 type: "Int",
-                name: "i"
+                name: "A"
             },
             {
                 type: "Int",
-                name: "j"
+                name: "B"
             },
         ],
         outputs: [{
@@ -66,17 +73,21 @@ else {
             name: ""
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:i>> >= <<inputs:j>>)`,
+        becomes: `(<<inputs:A>> >= <<inputs:B>>)`,
+        defaultValue : {
+          "A" : 0,
+          "B" : 0,
+        }
     },
     {
         name: "Int <",
         inputs: [{
                 type: "Int",
-                name: "i"
+                name: "A"
             },
             {
                 type: "Int",
-                name: "j"
+                name: "B"
             },
         ],
         outputs: [{
@@ -84,17 +95,21 @@ else {
             name: ""
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:i>> < <<inputs:j>>)`,
+        becomes: `(<<inputs:A>> < <<inputs:B>>)`,
+        defaultValue : {
+          "A" : 0,
+          "B" : 0,
+        }
     },
     {
         name: "Int <=",
         inputs: [{
                 type: "Int",
-                name: "i"
+                name: "A"
             },
             {
                 type: "Int",
-                name: "j"
+                name: "B"
             },
         ],
         outputs: [{
@@ -102,17 +117,21 @@ else {
             name: ""
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:i>> <= <<inputs:j>>)`,
+        becomes: `(<<inputs:A>> <= <<inputs:B>>)`,
+        defaultValue : {
+          "A" : 0,
+          "B" : 0,
+        }
     },
     {
         name: "==",
         inputs: [{
                 type: "any",
-                name: "i"
+                name: "A"
             },
             {
                 type: "any",
-                name: "j"
+                name: "B"
             },
         ],
         outputs: [{
@@ -120,17 +139,17 @@ else {
             name: ""
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:i>> == <<inputs:j>>)`,
+        becomes: `(<<inputs:A>> == <<inputs:B>>)`,
     },
     {
         name: "!=",
         inputs: [{
                 type: "any",
-                name: "i"
+                name: "A"
             },
             {
                 type: "any",
-                name: "j"
+                name: "B"
             },
         ],
         outputs: [{
@@ -138,6 +157,6 @@ else {
             name: ""
         }, ],
         needsExecution: false,
-        becomes: `(<<inputs:i>> != <<inputs:j>>)`,
+        becomes: `(<<inputs:A>> != <<inputs:B>>)`,
     },
 ]

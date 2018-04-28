@@ -26,6 +26,7 @@ export function AppToFileTranslator (app : App, directDownload : boolean) {
       obj.nodes[i].pos = {};
       obj.nodes[i].pos.x = app.mapContainer.nodes[i].state.posX;
       obj.nodes[i].pos.y = app.mapContainer.nodes[i].state.posY;
+      obj.nodes[i].defaultValue = app.mapContainer.nodes[i].state.defaultValue;
       obj.nodes[i].inputs = {};
       obj.nodes[i].outputs = {};
       if(n.name === "Get" || n.name === "Set") {
@@ -59,7 +60,7 @@ export function AppToFileTranslator (app : App, directDownload : boolean) {
 }
 
 export function FileToAppTranslator (app : App, obj : Object) {
-  console.log(obj)
+  console.log(obj);// eslint-disable-line
   app.state.vars = [];
   Object.entries(obj.vars).forEach((data : [string, any]) => {
     const realV = {
@@ -84,8 +85,9 @@ export function FileToAppTranslator (app : App, obj : Object) {
     });
 
     app.setState({}, () => {// we draw the nodes, and then connect the connectors
-      Object.entries(obj.nodes).forEach((data : [string, any]) => {
+      Object.entries(obj.nodes).forEach((data : [string, any]) => {// data[1] is the node as defined in AppToFileTranslator
         const i = parseInt(data[0], 10);
+        app.mapContainer.nodes[i].state.defaultValue = data[1].defaultValue;
         Object.entries(data[1].inputs).forEach((inputData : [string, any]) => {// inputData[1] is Array<{nodeKey : string, connectorId : string}>
           const j = parseInt(inputData[0], 10);
           const mapContainer = app.mapContainer;

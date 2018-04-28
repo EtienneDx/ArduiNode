@@ -155,7 +155,15 @@ class App extends Component<null, State> {
             />
             <Details ref={e => this.details = e} app={this}/>
           </div>
-          <MapContainer ref={e => this.mapContainer = e} openToolbar={(e, x, y) => this.toolbar.openFromDrag(e, x, y)} >
+          <MapContainer
+            ref={e => this.mapContainer = e}
+            openToolbar={(e, x, y) => this.toolbar.openFromDrag(e, x, y)}
+            inspectedObject={this.state.inspectedObject}
+            setInspected={obj => {
+              this.details.setInspected(obj);
+              this.setState({inspectedObject : obj});
+            }}
+          >
             {this.state.nodes.map((n, i) => {
               const x = typeof n.initialPosX === "number" ? n.initialPosX : null;
               const y = typeof n.initialPosY === "number" ? n.initialPosY : null;

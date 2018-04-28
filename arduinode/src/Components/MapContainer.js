@@ -24,6 +24,8 @@ type State = {
 type Props = {
   children?: React.Node,
   openToolbar : Function,
+  inspectedObject : any,
+  setInspected : Function,
 }
 
 class MapContainer extends React.Component<Props, State> {
@@ -162,6 +164,8 @@ class MapContainer extends React.Component<Props, State> {
         getDraggedObject : () => this.actuallyDraggedObject,
         initialPosX : typeof child.props.initialPosX === "number" ? child.props.initialPosX : this.getCenterX(),
         initialPosY : typeof child.props.initialPosY === "number" ? child.props.initialPosY : this.getCenterY(),
+        inspectedObject : this.props.inspectedObject === null ? null : this.props.inspectedObject.object,
+        setInspected : this.props.setInspected,
       })}) : null;
     return (
       <div className="MapContainer">

@@ -19,6 +19,7 @@ type State = {
   posX : number,
   posY : number,
   enabled : boolean,
+  defaultValue : Object,
 }
 
 type Props = {
@@ -32,6 +33,8 @@ type Props = {
   getVar : Function,
   initialPosX : number,
   initialPosY : number,
+  inspectedObject : Object,// actually inspected object === app.state.inspectedObject.object
+  setInspected : Function,
 }
 
 class Node extends React.Component<Props, State> {
@@ -46,6 +49,7 @@ class Node extends React.Component<Props, State> {
       posX : props.initialPosX,
       posY : props.initialPosY,
       enabled : true,
+      defaultValue : Object.assign({}, props.type.defaultValue),
     };
   }
 
@@ -94,6 +98,16 @@ class Node extends React.Component<Props, State> {
         this.props.needRepaint();
       }, 10);// check after setstate becomes effective
     }
+    else {
+      this.props.setInspected({
+        object : {
+          defaultValue : this.state.defaultValue,
+          name : this.props.type.name,
+          inputs : this.props.type.inputs,
+        },
+        objectType : "node-default-value",
+      })
+    }
   }
 
   check() {
@@ -126,7 +140,11 @@ class Node extends React.Component<Props, State> {
     var inId = 0;
     var outId = 0;
     return (
-      <div className="Node"
+      <div
+        className={
+          "Node" +
+            ((this.props.inspectedObject !== null && this.props.inspectedObject.defaultValue === this.state.defaultValue) ? " selectedNode" : "")
+        }
         draggable="true"
         onDragStart={(e) => this.handleDragStart(e)}
         onDrag={(e) => this.handleDrag(e)}
@@ -163,6 +181,7 @@ class Node extends React.Component<Props, State> {
                       this.inputs[connector.props.connectorId] = connector;
                   }}
                   parent={this}
+                  defaultValue={this.state.defaultValue ? (input.type !== "Execution" ? this.state.defaultValue[input.name] : null ) : {}}
                 />
               ))}
           </div>

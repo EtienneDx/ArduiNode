@@ -3,14 +3,16 @@ export default [
         name: "Int to Bool",
         inputs: [{
             type: "Int",
-            name: "i"
+            name: "int"
         }, ],
         outputs: [{
             type: "Boolean",
-            name: "b"
+            name: "bool"
         }, ],
         needsExecution: false,
-        becomes: `<<inputs:i>>`,
-        globalVars: []
+        becomes: `<<inputs:int>>`,
+        defaultValue : {
+          "int" : 0,
+        }
     },
 ]
