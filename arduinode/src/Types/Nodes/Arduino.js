@@ -64,7 +64,10 @@ void loop() {
     needsExecution : true,
     becomes :
 `digitalWrite(<<inputs:pin>>, <<inputs:value>>);
-`
+`,
+    defaultValue : {
+      "value" : "true",
+    }
   },
   {
 	name : "Digital read",
@@ -106,7 +109,10 @@ void loop() {
 	needsExecution : true,
 	becomes :
 `delay(<<inputs:duration>>);
-`
+`,
+    defaultValue : {
+      "duration" : 500,
+    }
 },
 {
 	name : "Delay Microseconds",
@@ -129,6 +135,9 @@ void loop() {
 	needsExecution : true,
 	becomes : `delayMicroseconds(<<inputs:duration>>);
 `,
+    defaultValue : {
+      "duration" : 500,
+    }
 },
 {
 	name : "Analog Write",
@@ -155,6 +164,9 @@ void loop() {
 	needsExecution : true,
 	becomes : `analogWrite(<<inputs:pin>>, <<inputs:value>>);
 `,
+    defaultValue : {
+      "value" : 500,
+    }
 },
 {
 	name : "Analog Read",
@@ -172,6 +184,9 @@ void loop() {
 	],
 	needsExecution : false,
 	becomes : `analogRead(<<inputs:pin>>)`,
+  defaultValue : {
+    "value" : 500,
+  }
 },
 {
 	name : "Micros",
@@ -204,28 +219,31 @@ void loop() {
 	inputs : [
 		{
 			type : "Int",
-			name : "i"
+			name : "A"
 		},
 	],
 	outputs : [
 		{
 			type : "Int",
-			name : "i"
+			name : "|A|"
 		},
 	],
 	needsExecution : false,
-	becomes : `abs(<<inputs:i>>)`,
+	becomes : `abs(<<inputs:A>>)`,
+  defaultValue : {
+    "A" : 0,
+  }
 },
 {
 	name : "Int Max",
 	inputs : [
 		{
 			type : "Int",
-			name : "i"
+			name : "A"
 		},
 		{
 			type : "Int",
-			name : "j"
+			name : "B"
 		},
 	],
 	outputs : [
@@ -235,18 +253,22 @@ void loop() {
 		},
 	],
 	needsExecution : false,
-	becomes : `max(<<inputs:i>>, <<inputs:j>>)`,
+	becomes : `max(<<inputs:A>>, <<inputs:B>>)`,
+  defaultValue : {
+    "A" : 0,
+    "B" : 0,
+  }
 },
 {
 	name : "Int Min",
 	inputs : [
 		{
 			type : "Int",
-			name : "i"
+			name : "A"
 		},
 		{
 			type : "Int",
-			name : "j"
+			name : "B"
 		},
 	],
 	outputs : [
@@ -256,18 +278,22 @@ void loop() {
 		},
 	],
 	needsExecution : false,
-	becomes : `min(<<inputs:i>>, <<inputs:j>>)`,
+	becomes : `min(<<inputs:A>>, <<inputs:B>>)`,
+  defaultValue : {
+    "A" : 0,
+    "B" : 0,
+  }
 },
 {
 	name : "Int Pow",
 	inputs : [
 		{
 			type : "Int",
-			name : "i"
+			name : "A"
 		},
 		{
 			type : "Int",
-			name : "j"
+			name : "B"
 		},
 	],
 	outputs : [
@@ -277,27 +303,70 @@ void loop() {
 		},
 	],
 	needsExecution : false,
-	becomes : `pow(<<inputs:i>>, <<inputs:j>>)`,
-	globalVars : [
-	]
+	becomes : `pow(<<inputs:A>>, <<inputs:B>>)`,
+  defaultValue : {
+    "A" : 0,
+    "B" : 0,
+  }
 },
 {
 	name : "Int Sqrt",
 	inputs : [
 		{
 			type : "Int",
-			name : "i"
+			name : "A"
 		},
 	],
 	outputs : [
 		{
 			type : "Int",
-			name : "sqrt"
+			name : "sqrt A"
 		},
 	],
 	needsExecution : false,
-	becomes : `sqrt(<<inputs:i>)`,
-	globalVars : [
-	]
+	becomes : `sqrt(<<inputs:A>>)`,
+  defaultValue : {
+    "A" : 0,
+  }
+},
+{
+	name : "Int map",
+	inputs : [
+		{
+			type : "Int",
+			name : "A"
+		},
+		{
+			type : "Int",
+			name : "From Low"
+		},
+		{
+			type : "Int",
+			name : "From High"
+		},
+		{
+			type : "Int",
+			name : "To Low"
+		},
+		{
+			type : "Int",
+			name : "To High"
+		},
+	],
+	outputs : [
+		{
+			type : "Int",
+			name : "mapped A"
+		},
+	],
+	needsExecution : false,
+	becomes : `map(<<inputs:A>>, <<inputs:From Low>>, <<inputs:From High>>, <<inputs:To Low>>, <<inputs:To High>>)`,
+  defaultValue : {
+    "A" : 0,
+    "From Low" : 0,
+    "From High" : 1024,
+    "To Low" : 0,
+    "To High" : 256,
+  }
 },
 ]

@@ -26,6 +26,7 @@ type Props = {
   setDraggedObject : Function,
   getDraggedObject : Function,
   parent : Node,
+  defaultValue : any,
 }
 
 const refreshRate = 10;// rate at which the line is redrawn
@@ -225,7 +226,7 @@ class Input extends React.Component<Props, State> {
           onDragEnd={e => this.handleDragEnd(e)}
           onClick={e => this.handleClick(e)}
         />
-        <span className="Node-input-name">{this.props.name}</span>
+        <span className="Node-input-name">{this.props.name + (this.connectedTo.length === 0 && this.props.type.name !== "Execution"? " = " + this.props.defaultValue : "")}</span>
       </div>
     );
   }
