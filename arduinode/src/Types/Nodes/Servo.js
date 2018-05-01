@@ -29,4 +29,23 @@ defaultValue : {
 	rotation : 0,
 }
 },
+{
+	name : "Read servo angle",
+	inputs : [
+		{
+			type : "Servo",
+			name : "servo"
+		},
+  ],
+	outputs : [
+		{
+			type : "Int",
+			name : "angle"
+		},
+  ],
+  imports : "<Servo.h>",
+	needsExecution : false,
+	becomes : `<<inputs:servo>>.read()`,
+defaultValue : {}
+},
 ];
