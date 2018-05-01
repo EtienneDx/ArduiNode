@@ -11,6 +11,8 @@ const maxZoomLevel = 5;
 
 const zoomCorrespondances = [1, 0.8, 0.6, 0.5, 0.4, 0.3];
 
+const updateFrequency = 6;
+
 type State = {
   mouseStartX : number,
   mouseStartY : number,
@@ -45,6 +47,7 @@ class MapContainer extends React.Component<Props, State> {
   nodes : Array<Node> = [];
   needRepaint : boolean = true;
   actuallyDraggedObject : Input | Output;
+  updateLeft = updateFrequency;
 
   /***********Drag Events***************/
 
@@ -62,10 +65,13 @@ class MapContainer extends React.Component<Props, State> {
   }
 
   handleDrag(e : SyntheticDragEvent<HTMLDivElement>) {
-    this.setState({
-      posX: this.state.startPosX + (e.clientX - this.state.mouseStartX) / zoomCorrespondances[this.state.zoomLevel],
-      posY: this.state.startPosY + (e.clientY - this.state.mouseStartY) / zoomCorrespondances[this.state.zoomLevel],
-    });
+    this.updateLeft = (this.updateLeft + 1) % updateFrequency;
+    if(this.updateLeft === 0) {
+      this.setState({
+        posX: this.state.startPosX + (e.clientX - this.state.mouseStartX) / zoomCorrespondances[this.state.zoomLevel],
+        posY: this.state.startPosY + (e.clientY - this.state.mouseStartY) / zoomCorrespondances[this.state.zoomLevel],
+      });
+    }
   }
 
   /***********Scroll Event*************/
