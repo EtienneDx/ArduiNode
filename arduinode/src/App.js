@@ -1,17 +1,19 @@
 /* @flow */
 import React, { Component } from 'react';
 import ReactFileReader from 'react-file-reader';
-import urlQuery from './urlQuery';
 
 import { Toolbar, MapContainer, Node, Variables, Details, OutputBox, InfoPopup, Input, Output } from './Components';
 import './css/App.css';
 
 import { NodeTypes } from './Types';
 import { Translator, FileTranslator } from './Translator';
+import urlQuery from './urlQuery';
+import LanguageLoader from './LanguageLoader';
 
 import type { Variable, NodeType } from './Types';
 
 type State = {
+  languageLoaded : boolean,// is the selected language loaded?
   inspectedObject : ?{
     getObject : Function,
     setObject : Function,
@@ -36,6 +38,7 @@ class App extends Component<null, State> {
   constructor(props : null) {
     super(props);
     this.state = {
+      languageLoaded : false,
       inspectedObject : null,
       nodes : [
         setupNode,
@@ -54,6 +57,8 @@ class App extends Component<null, State> {
     } else if(query.src === "example") {
       console.log("loading example sketch :  https://arduinode.net/loadExampleSketch.php?src=" + query.ref);
       this.readFileAndOpen("https://arduinode.net/loadExampleSketch.php?src=" + query.ref);
+    } else {
+      LanguageLoader("arduino", () => this.setState({ languageLoaded : true }));
     }
   }
 
@@ -66,9 +71,15 @@ class App extends Component<null, State> {
         {
             if(rawFile.status === 200 || rawFile.status === 0)
             {
-                var allText = rawFile.responseText;
+                const allText = rawFile.responseText;
                 try {
-                  FileTranslator.FileToAppTranslator(app, JSON.parse(allText));
+                  const jsonData = JSON.parse(allText);
+                  LanguageLoader(
+                    typeof jsonData.language === "string" ? jsonData.language : "arduino",
+                    () => {
+                      this.setState({ languageLoaded : true });
+                      FileTranslator.FileToAppTranslator(app, jsonData);
+                    });
                 } catch (e) {
                   console.error(e); //eslint-disable-line
                 }
@@ -133,95 +144,102 @@ class App extends Component<null, State> {
   }
 
   render() {
-    //var i = 0;// the key of the nodes
-    return (
-      <div className="App" onClick={() => {
-        this.details.setInspected(null);
-        this.toolbar.clearQuery();
-        this.setState({inspectedObject : null});// redraw
-      }}>
-        <header className="App-header">
-          <h1 className="App-title">Welcome to ArduiNode</h1>
-          <div style={{textAlign: "left"}}>
-            <button onClick={e => {
-              e.stopPropagation();
-              this.setState({ output : Translator(this), outputShown : true });
-            }}>
-              Generate code
-            </button>
-            <button onClick={e => {
-              e.stopPropagation();
-              this.setState({ output : FileTranslator.AppToFileTranslator(this, true), outputShown : true });
-            }}>
-              Save sketch
-            </button>
-            <ReactFileReader handleFiles={files => this.handleFiles(files)} fileTypes={'.arduinode'}>
-              <button className='btn' onClick={e => e.stopPropagation()}>Load sketch</button>
-            </ReactFileReader>
-            <button onClick={e => {
-              e.stopPropagation();
-              this.details.setInspected(
-              {
-                 objectType : "examples",
-                 object : {name : "", value : ""},
-              })
-            }}>
-              Examples
-            </button>
-            <div style={{display : "inline", right : 0, position : "absolute"}}>
-              <a href="" onClick={e => {
-                e.preventDefault();
+    if(this.state.languageLoaded) {
+      return (
+        <div className="App" onClick={() => {
+          this.details.setInspected(null);
+          this.toolbar.clearQuery();
+          this.setState({inspectedObject : null});// redraw
+        }}>
+          <header className="App-header">
+            <h1 className="App-title">Welcome to ArduiNode</h1>
+            <div style={{textAlign: "left"}}>
+              <button onClick={e => {
                 e.stopPropagation();
-                this.setState({infoShown : true});
-              }}>More infos</a>
-            </div>
-        </div>
-        </header>
-        <div className="App-container">
-          <OutputBox data={this.state.output} shown={this.state.outputShown} toggleShown={() => this.setState({ outputShown : false })}></OutputBox>
-          <InfoPopup shown={this.state.infoShown} toggleShown={() => this.setState({ infoShown : false })}></InfoPopup>
-          <div className="left-toolbar">
-            <Variables
-              setDetails={obj => {
-                this.setState({inspectedObject : obj});
-                this.details.setInspected(obj);
-              }}
-              inspectedObject={this.state.inspectedObject}
-              addNode={n => this.addNode(n)}
-              vars={this.state.vars}// arrays are references so no problem
-              refresh={(then) => this.refresh(then)}
-            />
-            <Details ref={e => this.details = e} app={this}/>
+                this.setState({ output : Translator(this), outputShown : true });
+              }}>
+                Generate code
+              </button>
+              <button onClick={e => {
+                e.stopPropagation();
+                this.setState({ output : FileTranslator.AppToFileTranslator(this, true), outputShown : true });
+              }}>
+                Save sketch
+              </button>
+              <ReactFileReader handleFiles={files => this.handleFiles(files)} fileTypes={'.arduinode'}>
+                <button className='btn' onClick={e => e.stopPropagation()}>Load sketch</button>
+              </ReactFileReader>
+              <button onClick={e => {
+                e.stopPropagation();
+                this.details.setInspected(
+                {
+                   objectType : "examples",
+                   object : {name : "", value : ""},
+                })
+              }}>
+                Examples
+              </button>
+              <div style={{display : "inline", right : 0, position : "absolute"}}>
+                <a href="" onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  this.setState({infoShown : true});
+                }}>More infos</a>
+              </div>
           </div>
-          <MapContainer
-            ref={e => this.mapContainer = e}
-            openToolbar={(e, x, y) => this.toolbar.openFromDrag(e, x, y)}
-            inspectedObject={this.state.inspectedObject}
-            setInspected={obj => {
-              this.details.setInspected(obj);
-              this.setState({inspectedObject : obj});
-            }}
-          >
-            {this.state.nodes.map((n, i) => {
-              const x = typeof n.initialPosX === "number" ? n.initialPosX : null;
-              const y = typeof n.initialPosY === "number" ? n.initialPosY : null;
-              return (
-              <Node
-                type={n}
-                nodeKey={i}
-                key={i}
-                getVar={j => this.state.vars[j]}
-                initialPosX={x}
-                initialPosY={y}
+          </header>
+          <div className="App-container">
+            <OutputBox data={this.state.output} shown={this.state.outputShown} toggleShown={() => this.setState({ outputShown : false })}></OutputBox>
+            <InfoPopup shown={this.state.infoShown} toggleShown={() => this.setState({ infoShown : false })}></InfoPopup>
+            <div className="left-toolbar">
+              <Variables
+                setDetails={obj => {
+                  this.setState({inspectedObject : obj});
+                  this.details.setInspected(obj);
+                }}
+                inspectedObject={this.state.inspectedObject}
+                addNode={n => this.addNode(n)}
+                vars={this.state.vars}// arrays are references so no problem
+                refresh={(then) => this.refresh(then)}
               />
-            )})}
-          </MapContainer>
-          <div className="right-toolbar">
-            <Toolbar addNode={(n, f) => this.addNode(n, f)} ref={e => this.toolbar = e} />
+              <Details ref={e => this.details = e} app={this}/>
+            </div>
+            <MapContainer
+              ref={e => this.mapContainer = e}
+              openToolbar={(e, x, y) => this.toolbar.openFromDrag(e, x, y)}
+              inspectedObject={this.state.inspectedObject}
+              setInspected={obj => {
+                this.details.setInspected(obj);
+                this.setState({inspectedObject : obj});
+              }}
+            >
+              {this.state.nodes.map((n, i) => {
+                const x = typeof n.initialPosX === "number" ? n.initialPosX : null;
+                const y = typeof n.initialPosY === "number" ? n.initialPosY : null;
+                return (
+                <Node
+                  type={n}
+                  nodeKey={i}
+                  key={i}
+                  getVar={j => this.state.vars[j]}
+                  initialPosX={x}
+                  initialPosY={y}
+                />
+              )})}
+            </MapContainer>
+            <div className="right-toolbar">
+              <Toolbar addNode={(n, f) => this.addNode(n, f)} ref={e => this.toolbar = e} />
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div>
+          <img src="https://media.giphy.com/media/y1ZBcOGOOtlpC/giphy.gif" alt="Loading..."></img>
+        </div>
+      );
+    }
   }
 }
 
