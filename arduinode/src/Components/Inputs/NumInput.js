@@ -21,7 +21,7 @@ class NumInput extends Component<Props> {
         <input
           type="number"
           value={this.props.value}
-          onChange={e => this.props.onChange(parseInt(e.target.value))}
+          onChange={e => this.props.onChange(parseInt(e.target.value, 10))}
           className="input-field"
         >
         </input>
