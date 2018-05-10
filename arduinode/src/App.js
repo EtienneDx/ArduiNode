@@ -48,7 +48,6 @@ class App extends Component<null, State> {
     };
 
     const query = urlQuery(location.search);// eslint-disable-line
-    const app = this;
     if(query.src === "pastebin") {
       console.log("loading pastebin sketch :  https://arduinode.net/loadPbSketch.php?src=" + query.ref);
       this.readFileAndOpen("https://arduinode.net/loadPbSketch.php?src=" + query.ref);
@@ -56,6 +55,31 @@ class App extends Component<null, State> {
       console.log("loading example sketch :  https://arduinode.net/loadExampleSketch.php?src=" + query.ref);
       this.readFileAndOpen("https://arduinode.net/loadExampleSketch.php?src=" + query.ref);
     }
+  }
+
+  readFileAndOpen(file : string) {
+    var app = this;
+    var rawFile = new XMLHttpRequest();// eslint-disable-line
+    rawFile.onload = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status === 0)
+            {
+                var allText = rawFile.responseText;
+                try {
+                  FileTranslator.FileToAppTranslator(app, JSON.parse(allText));
+                } catch (e) {
+                  console.error(e); //eslint-disable-line
+                }
+            }
+        }
+    }
+    rawFile.onerror = function (e) {
+      console.error(rawFile.statusText, e);// eslint-disable-line
+    };
+    rawFile.open("GET", file, true);
+    rawFile.send(null);
   }
 
   readFileAndOpen(file : string) {
