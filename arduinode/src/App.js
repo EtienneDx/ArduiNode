@@ -48,6 +48,7 @@ class App extends Component<null, State> {
     };
 
     const query = urlQuery(location.search);// eslint-disable-line
+    const app = this;
     if(query.src === "pastebin") {
       console.log("loading pastebin sketch :  https://arduinode.net/loadPbSketch.php?src=" + query.ref);
       this.readFileAndOpen("https://arduinode.net/loadPbSketch.php?src=" + query.ref);
