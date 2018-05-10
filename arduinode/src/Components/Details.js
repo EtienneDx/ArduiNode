@@ -6,8 +6,7 @@ import '../css/App.css';
 import { VarTypes, getVarType } from '../Types';
 import { TextInput, NumInput, BoolInput, SelectInput, TypeSelect } from './Inputs';
 import App from '../App';
-import * as Examples from '../Examples';
-import { FileTranslator } from '../Translator';
+import Examples from '../Examples.js';
 
 type T = {
   object : {
@@ -163,12 +162,14 @@ class Details extends Component<Props, State> {
         <span>Examples</span>
         <ul>
           {Object.entries(Examples).map((data : [string, any]) => (
-            <li key={data[0]}>{data[0]} <button onClick={
+            <li key={data[0]}>{/*{data[0]} <button onClick={
               e => {
                 e.stopPropagation();
                 this.readTextFile(data[1], json => FileTranslator.FileToAppTranslator(this.props.app, JSON.parse(json)))
               }
-            }>Open</button></li>
+            }>Open</button>*/}
+              <a href={"./index.html?src=example&ref=" + data[1]}>{data[0]}</a>
+            </li>
           ))}
         </ul>
       </div>
