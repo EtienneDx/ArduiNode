@@ -1,6 +1,7 @@
 /* @flow */
 import React, { Component } from 'react';
 import ReactFileReader from 'react-file-reader';
+import urlQuery from './urlQuery';
 
 import { Toolbar, MapContainer, Node, Variables, Details, OutputBox, InfoPopup, Input, Output } from './Components';
 import './css/App.css';
@@ -32,21 +33,44 @@ loopNode.initialPosY = 2400;
 
 class App extends Component<null, State> {
 
+  constructor(props : null) {
+    super(props);
+    this.state = {
+      inspectedObject : null,
+      nodes : [
+        setupNode,
+        loopNode,
+      ],
+      vars : [],
+      outputShown : false,
+      output : "",
+      infoShown : false,
+    };
+
+    const query = urlQuery(location.search);// eslint-disable-line
+    if(query.src === "pastebin") {
+      console.log("loading pastebin sketch : " + "https://arduinode.net/loadPbSketch.php?src=" + query.ref)
+      fetch("https://arduinode.net/loadPbSketch.php?src=" + query.ref)
+      .then(res =>  res.text())
+      .then(
+        (result) => {
+          console.log(result)
+          try {
+            FileTranslator.FileToAppTranslator(this, JSON.parse(result));
+          } catch (e) {
+            console.error(e); //eslint-disable-line
+          }
+        },
+        (error) => {
+          console.error(error); //eslint-disable-line
+        }
+      )
+    }
+  }
+
   details : Details;// the details panel
   mapContainer : MapContainer;// the sketch panel
   toolbar : Toolbar;// the toolbar panel
-
-  state = {
-    inspectedObject : null,
-    nodes : [
-      setupNode,
-      loopNode,
-    ],
-    vars : [],
-    outputShown : false,
-    output : "",
-    infoShown : false,
-  }
 
   refresh(then : Function) {
     this.mapContainer.checkConnections();// check if a node or a var have been disabled and require re-wiring
