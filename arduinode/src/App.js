@@ -82,31 +82,6 @@ class App extends Component<null, State> {
     rawFile.send(null);
   }
 
-  readFileAndOpen(file : string) {
-    var app = this;
-    var rawFile = new XMLHttpRequest();// eslint-disable-line
-    rawFile.onload = function ()
-    {
-        if(rawFile.readyState === 4)
-        {
-            if(rawFile.status === 200 || rawFile.status === 0)
-            {
-                var allText = rawFile.responseText;
-                try {
-                  FileTranslator.FileToAppTranslator(app, JSON.parse(allText));
-                } catch (e) {
-                  console.error(e); //eslint-disable-line
-                }
-            }
-        }
-    }
-    rawFile.onerror = function (e) {
-      console.error(rawFile.statusText, e);// eslint-disable-line
-    };
-    rawFile.open("GET", file, true);
-    rawFile.send(null);
-  }
-
   details : Details;// the details panel
   mapContainer : MapContainer;// the sketch panel
   toolbar : Toolbar;// the toolbar panel
