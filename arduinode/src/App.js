@@ -48,70 +48,38 @@ class App extends Component<null, State> {
     };
 
     const query = urlQuery(location.search);// eslint-disable-line
-    const app = this;
     if(query.src === "pastebin") {
-      console.log("loading pastebin sketch : " + "https://arduinode.net/loadPbSketch.php?src=" + query.ref)
-      var rawFile = new XMLHttpRequest();// eslint-disable-line
-      rawFile.onload = function ()
-      {
-          if(rawFile.readyState === 4)
-          {
-              if(rawFile.status === 200 || rawFile.status === 0)
-              {
-                  var allText = rawFile.responseText;
-                  try {
-                    FileTranslator.FileToAppTranslator(app, JSON.parse(allText));
-                  } catch (e) {
-                    console.error(e); //eslint-disable-line
-                  }
-              }
-          }
-      }
-      rawFile.onerror = function (e) {
-        console.error(rawFile.statusText, e);// eslint-disable-line
-      };
-      rawFile.open("GET", "https://arduinode.net/loadPbSketch.php?src=" + query.ref, true);
-      rawFile.send(null);
-      /*fetch("https://arduinode.net/loadPbSketch.php?src=" + query.ref)
-      .then(res =>  res.text())
-      .then(
-        (result) => {
-          console.log(result)
-          try {
-            FileTranslator.FileToAppTranslator(this, JSON.parse(result));
-          } catch (e) {
-            console.error(e); //eslint-disable-line
-          }
-        },
-        (error) => {
-          console.error(error); //eslint-disable-line
-        }
-      )*/
+      console.log("loading pastebin sketch :  https://arduinode.net/loadPbSketch.php?src=" + query.ref);
+      this.readFileAndOpen("https://arduinode.net/loadPbSketch.php?src=" + query.ref);
     } else if(query.src === "example") {
-      console.log("loading example sketch : " + "https://arduinode.net/loadExampleSketch.php?src=" + query.ref)
-      // @TODO make this async somehow, and browsers compatible(-> avoid fetch)
-      var rawFile = new XMLHttpRequest();// eslint-disable-line
-      rawFile.onload = function ()
-      {
-          if(rawFile.readyState === 4)
-          {
-              if(rawFile.status === 200 || rawFile.status === 0)
-              {
-                  var allText = rawFile.responseText;
-                  try {
-                    FileTranslator.FileToAppTranslator(app, JSON.parse(allText));
-                  } catch (e) {
-                    console.error(e); //eslint-disable-line
-                  }
-              }
-          }
-      }
-      rawFile.onerror = function (e) {
-        console.error(rawFile.statusText, e);// eslint-disable-line
-      };
-      rawFile.open("GET", "https://arduinode.net/loadExampleSketch.php?src=" + query.ref, true);
-      rawFile.send(null);
+      console.log("loading example sketch :  https://arduinode.net/loadExampleSketch.php?src=" + query.ref);
+      this.readFileAndOpen("https://arduinode.net/loadExampleSketch.php?src=" + query.ref);
     }
+  }
+
+  readFileAndOpen(file : string) {
+    var app = this;
+    var rawFile = new XMLHttpRequest();// eslint-disable-line
+    rawFile.onload = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status === 0)
+            {
+                var allText = rawFile.responseText;
+                try {
+                  FileTranslator.FileToAppTranslator(app, JSON.parse(allText));
+                } catch (e) {
+                  console.error(e); //eslint-disable-line
+                }
+            }
+        }
+    }
+    rawFile.onerror = function (e) {
+      console.error(rawFile.statusText, e);// eslint-disable-line
+    };
+    rawFile.open("GET", file, true);
+    rawFile.send(null);
   }
 
   details : Details;// the details panel
