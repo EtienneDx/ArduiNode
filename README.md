@@ -34,7 +34,7 @@ This command will install all the project dependencies. Once this command has fi
 
     npm start
 
-This will start the application into your brower, and you'll be good to go.
+This will start the application into your browser, and you'll be good to go.
 
 ## Contributing
 This project is still in development, and I'd therefore like any support you can provide, either from a feedback point of view and bug reporting, or from actual coding.
